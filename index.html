@@ -1082,8 +1082,20 @@ function renderTracking(){
     if((r['\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19']||'').trim()) schoolMap[sc].hasAnyPlan = true;
   });
 
-  var PISA_SUBJ  = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  // PISA_SUBJ ใช้ keyword สั้นๆ สำหรับ partial match
+  // เพราะครูอาจกรอก "วิทยาศาสตร์" หรือ "วิทยาศาสตร์และเทคโนโลยี" ก็ได้
+  var PISA_SUBJ       = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  var PISA_SUBJ_LABEL = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
   var PISA_GRADE = ['\u0e1b.4','\u0e1b.5','\u0e1b.6'];
+
+  // ฟังก์ชัน helper: ตรวจสอบว่าวิชาของครูตรงกับ PISA subject ไหน
+  // ใช้ partial match เพื่อรองรับชื่อที่หลากหลาย
+  function matchPisaSubj(teacherSubj){
+    for(var i=0; i<PISA_SUBJ.length; i++){
+      if(teacherSubj.indexOf(PISA_SUBJ[i]) !== -1) return i; // คืน index ที่ตรง
+    }
+    return -1; // ไม่ตรงกับวิชา PISA เลย
+  }
 
   var coverMap = {};
   SCHOOL_LIST.forEach(function(s){ coverMap[s] = {}; });
@@ -1096,12 +1108,14 @@ function renderTracking(){
     // ตรวจสอบว่าวิชาของครูคนนี้อยู่ใน PISA_SUBJ จริงๆ ก่อน
     // แล้วค่อยจับคู่กับระดับชั้นที่ครูคนนี้สอน
     // เพื่อป้องกันการนับผิดว่าครูวิทยาศาสตร์ครอบคลุมวิชาภาษาไทย
-    var ispisaSubj = PISA_SUBJ.indexOf(subj) !== -1;
-    if(ispisaSubj){
+    // ตรวจว่าวิชาของครูตรงกับ PISA subject ไหน (partial match)
+    var pisaIdx = matchPisaSubj(subj);
+    if(pisaIdx !== -1){
+      var pisaKey = PISA_SUBJ[pisaIdx]; // ใช้ key มาตรฐาน เช่น "วิทยาศาสตร์"
       PISA_GRADE.forEach(function(g){
         if(grade.indexOf(g) !== -1){
-          // บันทึกเฉพาะ วิชาจริงของครูคนนี้ + ระดับชั้นที่ครูคนนี้สอน
-          coverMap[sc][subj+'|'+g] = true;
+          // key = "วิทยาศาสตร์|ป.5" ไม่ว่าครูจะกรอกชื่อวิชายาวหรือสั้น
+          coverMap[sc][pisaKey+'|'+g] = true;
         }
       });
     }
@@ -1180,16 +1194,19 @@ function renderTracking(){
 function showMissingDetail(schoolName){
   var data = window._missingData && window._missingData[schoolName];
   if(!data) return;
-  var SUBJ  = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
-  var SUBJ_FULL = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  // ใช้ keyword เดียวกับ coverMap เพื่อให้ตรงกัน
+  var SUBJ      = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  var SUBJ_FULL = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
   var GRADE = ['\u0e1b.4','\u0e1b.5','\u0e1b.6'];
   var missingSet = {};
   if(data.missing) data.missing.forEach(function(m){ missingSet[m.subj+'|'+m.grade] = true; });
 
   // ถ้าขาดครบ 9 ช่องเหมือนกับไม่มีข้อมูลเลย ให้แสดงผลเหมือนกัน
-  var allMissing = data.noData || (data.missing && data.missing.length >= 9);
+  // แสดง "ยังไม่มีการลงทะเบียน" เฉพาะโรงเรียนที่ไม่มีครูใน Sheet เลยเท่านั้น
+  // ถ้ามีครูแต่ขาดบางช่องให้แสดงตาราง X/checkmark ตามความจริง
+  var allMissing = data.noData === true;
   var body = allMissing
-    ? '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">\u26a0\ufe0f \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e23\u0e39\u0e25\u0e07\u0e17\u0e30\u0e40\u0e1a\u0e35\u0e22\u0e19\u0e40\u0e25\u0e22</div>'
+    ? '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e01\u0e32\u0e23\u0e25\u0e07\u0e17\u0e30\u0e40\u0e1a\u0e35\u0e22\u0e19</div>'
     : (function(){
         var t = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem">';
         t += '<thead><tr><th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0">\u0e27\u0e34\u0e0a\u0e32</th>';
