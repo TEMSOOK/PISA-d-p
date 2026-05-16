@@ -707,21 +707,6 @@
       </div>
 
       <!-- ครบถ้วนแล้ว — ทั้งมีครูและส่งแผนแล้ว -->
-      <div class="track-card" style="grid-column:1/-1">
-        <div class="track-card-header green">
-          <span style="font-size:20px">🟢</span>
-          <div>
-            <div class="track-card-title green">ครบถ้วน — มีครูและส่งแผนแล้ว</div>
-            <div style="font-size:11px;color:#14532d;margin-top:2px">โรงเรียนที่ดำเนินการครบถ้วนแล้ว</div>
-          </div>
-          <div class="track-count green" id="cnt-complete">—</div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
-          <div class="track-list" id="list-complete" style="max-height:none;display:contents">
-            <div class="track-item" style="justify-content:center;color:var(--gray400)">กำลังโหลด...</div>
-          </div>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -1107,9 +1092,19 @@ function renderTracking(){
     var subj  = (r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']||'').trim();
     var grade = (r['\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e19']||'').trim();
     if(!coverMap[sc]) coverMap[sc] = {};
-    PISA_GRADE.forEach(function(g){
-      if(grade.indexOf(g) !== -1) coverMap[sc][subj+'|'+g] = true;
-    });
+
+    // ตรวจสอบว่าวิชาของครูคนนี้อยู่ใน PISA_SUBJ จริงๆ ก่อน
+    // แล้วค่อยจับคู่กับระดับชั้นที่ครูคนนี้สอน
+    // เพื่อป้องกันการนับผิดว่าครูวิทยาศาสตร์ครอบคลุมวิชาภาษาไทย
+    var ispisaSubj = PISA_SUBJ.indexOf(subj) !== -1;
+    if(ispisaSubj){
+      PISA_GRADE.forEach(function(g){
+        if(grade.indexOf(g) !== -1){
+          // บันทึกเฉพาะ วิชาจริงของครูคนนี้ + ระดับชั้นที่ครูคนนี้สอน
+          coverMap[sc][subj+'|'+g] = true;
+        }
+      });
+    }
   });
 
   var noData = [], incomplete = [], noPlan = [], complete = [];
@@ -1141,7 +1136,6 @@ function renderTracking(){
   // Counts
   document.getElementById('cnt-no-teacher').textContent = notComplete.length + ' \u0e41\u0e2b\u0e48\u0e07';
   document.getElementById('cnt-no-plan').textContent    = noPlan.length    + ' \u0e41\u0e2b\u0e48\u0e07';
-  document.getElementById('cnt-complete').textContent   = complete.length  + ' \u0e41\u0e2b\u0e48\u0e07';
 
   // List: notComplete
   window._missingData = {};
@@ -1155,7 +1149,7 @@ function renderTracking(){
           '<div style="flex:1;min-width:0"><div style="font-weight:600">'+(i+1)+'. '+r.name+'</div>' +
           (r.noData ? '' : '<div style="font-size:11px;color:#b91c1c">\u0e02\u0e32\u0e14 '+r.missing.length+' \u0e0a\u0e48\u0e2d\u0e07</div>') +
           '</div>' +
-          '<span class="track-item-count red">'+(r.noData?'\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25':'\u0e02\u0e32\u0e14 '+r.missing.length+' \u0e0a\u0e48\u0e2d\u0e07')+'</span>' +
+          '<span class="track-item-count red">'+(r.noData?'\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25':'\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e04\u0e23\u0e1a')+'</span>' +
           '</div>';
       }).join('')
     : '<div class="track-item" style="justify-content:center;color:#14532d">ทุกโรงเรียนครบแล้ว</div>';
@@ -1172,7 +1166,6 @@ function renderTracking(){
     : '<div class="track-item" style="justify-content:center;color:#14532d">ทุกโรงเรียนส่งแผนแล้ว</div>';
 
   // List: complete
-  var el = document.getElementById('list-complete');
   el.innerHTML = complete.length
     ? complete.map(function(r,i){
         return '<div class="track-item">' +
@@ -1193,7 +1186,9 @@ function showMissingDetail(schoolName){
   var missingSet = {};
   if(data.missing) data.missing.forEach(function(m){ missingSet[m.subj+'|'+m.grade] = true; });
 
-  var body = data.noData
+  // ถ้าขาดครบ 9 ช่องเหมือนกับไม่มีข้อมูลเลย ให้แสดงผลเหมือนกัน
+  var allMissing = data.noData || (data.missing && data.missing.length >= 9);
+  var body = allMissing
     ? '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">\u26a0\ufe0f \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e23\u0e39\u0e25\u0e07\u0e17\u0e30\u0e40\u0e1a\u0e35\u0e22\u0e19\u0e40\u0e25\u0e22</div>'
     : (function(){
         var t = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem">';
