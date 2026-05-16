@@ -822,6 +822,195 @@ var SCHOOL_LIST=[
   SCHOOL_LIST.forEach(function(s){var o=document.createElement('option');o.value=o.textContent=s;sel.appendChild(o);});
 });
 
+var allData=[], filtered=[], currentPage=1, PAGE_SIZE=25;
+var chartSubj=null, chartRank=null, chartSchool=null;
+var COLORS=['#1a65c5','#f59e0b','#7bd6f9','#e879a8','#22c55e',
+            '#8b5cf6','#f97316','#0ea5e9','#84cc16','#6366f1','#14b8a6'];
+
+function setStatus(msg,state){
+  document.getElementById('status-txt').textContent=msg;
+  document.getElementById('dot').className='dot '+(state||'');
+}
+
+// ดึงข้อมูลจาก Apps Script ด้วย JSONP
+// JSONP คือการสร้าง <script> tag แบบ dynamic ซึ่งไม่ถูกบล็อกโดย CORS
+// Apps Script จะตอบกลับในรูปแบบ: cb_1234({"status":"success","data":[...]})
+function fetchData(){
+  setStatus('กำลังดึงข้อมูลจาก Google Sheet...','spin');
+  var cb='cb_'+Date.now();
+  var script=document.createElement('script');
+  script.src=SCRIPT_URL+'?action=read&callback='+cb;
+
+  // timeout 15 วินาที ถ้า server ไม่ตอบกลับ
+  var t=setTimeout(function(){
+    setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง','err');
+    try{document.head.removeChild(script);delete window[cb];}catch(e){}
+  },15000);
+
+  window[cb]=function(res){
+    clearTimeout(t);
+    try{document.head.removeChild(script);}catch(e){}
+    delete window[cb];
+    if(res.status==='success'){
+      allData=res.data||[];
+      populateFilters();
+      applyFilter();
+      updateStats();
+      ['stats','toolbar','charts-section','table-section'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el) el.style.display=id==='stats'?'grid':id==='toolbar'?'flex':'block';
+      });
+      document.getElementById('pagination').style.display='flex';
+      setStatus('โหลดสำเร็จ — '+allData.length+' รายการ (อัปเดต: '+
+        new Date().toLocaleTimeString('th-TH')+')','ok');
+    } else {
+      setStatus('เกิดข้อผิดพลาด: '+(res.message||'ไม่ทราบสาเหตุ'),'err');
+    }
+  };
+
+  script.onerror=function(){
+    clearTimeout(t);
+    setStatus('เชื่อมต่อไม่ได้ — ตรวจสอบว่า Apps Script Deploy แล้ว','err');
+    try{document.head.removeChild(script);delete window[cb];}catch(e){}
+  };
+
+  document.head.appendChild(script);
+}
+
+function populateFilters(){
+  var s=[...new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean))]
+    .sort(function(a,b){return a.localeCompare(b,'th');});
+  document.getElementById('fil-subj').innerHTML=
+    '<option value="">กลุ่มสาระทั้งหมด</option>'+
+    s.map(function(x){return'<option value="'+x+'">'+x+'</option>';}).join('');
+}
+
+function applyFilter(){
+  var q=(document.getElementById('search').value||'').toLowerCase();
+  var sc=document.getElementById('fil-school').value;
+  var su=document.getElementById('fil-subj').value;
+  var pl=document.getElementById('fil-plan').value;
+  filtered=allData.filter(function(r){
+    return(!q||Object.values(r).some(function(v){return String(v).toLowerCase().includes(q);}))&&
+      (!sc||r['โรงเรียน']===sc)&&(!su||r['กลุ่มสาระการเรียนรู้']===su)&&
+      (!pl||(pl==='yes'?!!(r['ลิ้งก์แผนการสอน']||'').trim():!(r['ลิ้งก์แผนการสอน']||'').trim()));
+  });
+  currentPage=1;
+  renderTable();
+  renderCharts();
+  var c=document.getElementById('filtered-count');
+  if(c) c.textContent=filtered.length+' รายการ';
+}
+
+function updateStats(){
+  document.getElementById('s-total').textContent=allData.length.toLocaleString();
+  document.getElementById('s-schools').textContent=
+    new Set(allData.map(function(r){return r['โรงเรียน'];}).filter(Boolean)).size;
+  document.getElementById('s-subjects').textContent=
+    new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean)).size;
+  document.getElementById('s-uploaded').textContent=
+    allData.filter(function(r){return!!(r['ลิ้งก์แผนการสอน']||'').trim();}).length;
+}
+
+function cnt(data,key){
+  var m={};
+  data.forEach(function(r){var v=r[key]||'(ไม่ระบุ)';m[v]=(m[v]||0)+1;});
+  return Object.entries(m).map(function(e){return{label:e[0],value:e[1]};})
+    .sort(function(a,b){return b.value-a.value;});
+}
+
+function renderCharts(){
+  var sd=cnt(filtered,'กลุ่มสาระการเรียนรู้');
+  if(chartSubj) chartSubj.destroy();
+  chartSubj=new Chart(document.getElementById('chart-subj'),{type:'bar',
+    data:{labels:sd.map(function(d){return d.label;}),datasets:[{
+      data:sd.map(function(d){return d.value;}),
+      backgroundColor:sd.map(function(_,i){return COLORS[i%COLORS.length]+'bb';}),
+      borderColor:sd.map(function(_,i){return COLORS[i%COLORS.length];}),
+      borderWidth:1.5,borderRadius:10,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:function(c){return' '+c.raw+' คน ('+Math.round(c.raw/(filtered.length||1)*100)+'%)';}}}},
+      scales:{x:{grid:{display:false},ticks:{font:{family:'Sarabun',size:12}}},
+              y:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
+                 grid:{color:'rgba(26,101,197,.07)'},border:{display:false}}}}});
+
+  var rd=cnt(filtered,'วิทยฐานะ');
+  if(chartRank) chartRank.destroy();
+  chartRank=new Chart(document.getElementById('chart-rank'),{type:'doughnut',
+    data:{labels:rd.map(function(d){return d.label;}),datasets:[{
+      data:rd.map(function(d){return d.value;}),
+      backgroundColor:rd.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
+      borderColor:'#fff',borderWidth:3,hoverOffset:10}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Sarabun',size:12},
+        padding:14,boxWidth:12,usePointStyle:true}},
+        tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.raw+' คน';}}}}}});
+
+  var td=cnt(filtered,'โรงเรียน').slice(0,10);
+  if(chartSchool) chartSchool.destroy();
+  chartSchool=new Chart(document.getElementById('chart-school'),{type:'bar',
+    data:{labels:td.map(function(d){return d.label;}),datasets:[{
+      data:td.map(function(d){return d.value;}),
+      backgroundColor:'#7bd6f9bb',borderColor:'#5aa8e8',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน';}}}},
+      scales:{x:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
+                 grid:{color:'rgba(26,101,197,.07)'},border:{display:false}},
+              y:{grid:{display:false},ticks:{font:{family:'Sarabun',size:11},
+                callback:function(v){var l=td[v]?td[v].label:'';
+                  return l.length>14?l.substring(0,14)+'…':l;}}}}}});
+}
+
+function renderTable(){
+  var start=(currentPage-1)*PAGE_SIZE;
+  var page=filtered.slice(start,start+PAGE_SIZE);
+  var total=Math.ceil(filtered.length/PAGE_SIZE);
+  if(!page.length){
+    document.getElementById('tbody').innerHTML=
+      '<tr><td colspan="7" class="empty"><span class="empty-icon">🔍</span>ไม่พบข้อมูล</td></tr>';
+    document.getElementById('page-info').textContent=''; return;
+  }
+  document.getElementById('tbody').innerHTML=page.map(function(r,i){
+    var lk=(r['ลิ้งก์แผนการสอน']||'').trim();
+    var pc=lk?'<a href="'+lk+'" target="_blank" rel="noopener noreferrer" '+
+      'class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">📄 ดูกิจกรรมการเรียนรู้ ↗</a>':'';
+    return'<tr><td class="num">'+(start+i+1)+'</td>'+
+      '<td><span class="badge b-school">'+(r['โรงเรียน']||'—')+'</span></td>'+
+      '<td style="font-weight:600">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
+      '<td><span class="badge b-rank">'+(r['วิทยฐานะ']||'—')+'</span></td>'+
+      '<td><span class="badge b-subj">'+(r['กลุ่มสาระการเรียนรู้']||'—')+'</span></td>'+
+      '<td>'+(r['ระดับชั้นที่สอน']||'—')+'</td>'+
+      '<td>'+pc+'</td></tr>';
+  }).join('');
+  document.getElementById('page-info').textContent=
+    'หน้า '+currentPage+'/'+total+' · '+(start+1)+'–'+
+    Math.min(start+PAGE_SIZE,filtered.length)+' จาก '+filtered.length+' รายการ';
+  document.getElementById('btn-prev').disabled=currentPage<=1;
+  document.getElementById('btn-next').disabled=currentPage>=total;
+}
+
+function changePage(dir){
+  var total=Math.ceil(filtered.length/PAGE_SIZE);
+  currentPage=Math.max(1,Math.min(total,currentPage+dir));
+  renderTable();
+}
+
+function exportCSV(){
+  var h=['โรงเรียน','ชื่อ-นามสกุล','วิทยฐานะ','กลุ่มสาระการเรียนรู้',
+         'ระดับชั้นที่สอน','ลิ้งก์แผนการสอน'];
+  var rows=filtered.map(function(r){
+    return h.map(function(k){return'"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(',');
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(
+    ['﻿'+h.join(',')+'
+'+rows.join('
+')],{type:'text/csv;charset=utf-8;'}));
+  a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';
+  a.click();
+}
+
 function switchTab(tab){
   document.querySelectorAll('.nav-tab').forEach(function(t,i){
     t.classList.toggle('active',['dashboard','tracking','upload'][i]===tab);
