@@ -411,11 +411,85 @@
     .empty { text-align: center; padding: 4rem 2rem; color: var(--gray400); font-size: 14px; }
     .empty-icon { font-size: 50px; display: block; margin-bottom: 12px; opacity: .4; }
 
+
+    /* ─── TRACKING PAGE ─── */
+    .progress-track-bg {
+      background: var(--gray100); border-radius: 99px;
+      height: 12px; overflow: hidden; flex: 1;
+    }
+    .progress-track-fill {
+      height: 100%; border-radius: 99px;
+      transition: width .6s ease;
+    }
+    .progress-track-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .progress-track-fill.yellow { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+    .progress-track-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    .summary-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--white); border: 1px solid var(--gray200);
+      border-radius: var(--radius-lg); padding: 20px 24px;
+      margin-bottom: 1rem; box-shadow: var(--shadow);
+    }
+    .summary-bar-label { font-size: 14px; font-weight: 600; color: var(--text); min-width: 220px; }
+    .summary-bar-num { font-size: 14px; font-weight: 700; color: var(--blue); min-width: 60px; text-align: right; }
+
+    .track-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 1.5rem;
+    }
+    .track-card {
+      background: var(--white); border: 1px solid var(--gray200);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .track-card-header {
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .track-card-header.red    { background: #fff5f5; border-bottom: 1px solid #fecaca; }
+    .track-card-header.yellow { background: #fffbeb; border-bottom: 1px solid #fde68a; }
+    .track-card-header.green  { background: #f0fdf4; border-bottom: 1px solid #bbf7d0; }
+    .track-card-title { font-size: 14px; font-weight: 700; }
+    .track-card-title.red    { color: #b91c1c; }
+    .track-card-title.yellow { color: #92400e; }
+    .track-card-title.green  { color: #14532d; }
+    .track-count {
+      margin-left: auto; font-size: 22px; font-weight: 700;
+    }
+    .track-count.red    { color: #ef4444; }
+    .track-count.yellow { color: #f59e0b; }
+    .track-count.green  { color: #22c55e; }
+
+    .track-list { max-height: 320px; overflow-y: auto; }
+    .track-item {
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--gray100);
+      font-size: 13px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .track-item:last-child { border-bottom: none; }
+    .track-item:hover { background: var(--sky3); }
+    .track-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .track-dot.red    { background: #ef4444; }
+    .track-dot.yellow { background: #f59e0b; }
+    .track-dot.green  { background: #22c55e; }
+    .track-item-count {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 99px;
+    }
+    .track-item-count.red    { background: #fee2e2; color: #b91c1c; }
+    .track-item-count.yellow { background: #fef3c7; color: #92400e; }
+    .track-item-count.green  { background: #dcfce7; color: #14532d; }
+
+    @media (max-width: 700px) { .track-grid { grid-template-columns: 1fr; } }
+
     @media (max-width: 700px) {
       .charts-grid { grid-template-columns: 1fr; }
       .chart-card.full { grid-column: auto; }
       .nav-title-sub { display: none; }
       .content { padding: 1.25rem 1rem 2rem; }
+      .track-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -432,7 +506,8 @@
   </div>
   <div class="nav-tabs">
     <div class="nav-tab active" onclick="switchTab('dashboard')">📊 แดชบอร์ด</div>
-    <div class="nav-tab" onclick="switchTab('upload')">📤 อัปโหลดแผนการสอน</div>
+    <div class="nav-tab" onclick="switchTab('tracking')">📌 ติดตาม</div>
+    <div class="nav-tab" onclick="switchTab('upload')">📤 การจัดกิจกรรมการเรียนรู้</div>
   </div>
 </nav>
 
@@ -556,11 +631,104 @@
   </div>
 </div>
 
+
+<!-- หน้าติดตาม -->
+<div id="page-tracking" class="page">
+  <div class="hero">
+    <div class="hero-dots"></div>
+    <div class="hero-inner">
+      <h1>📌 ติดตามความครบถ้วนของโรงเรียน</h1>
+      <p>ตรวจสอบว่าโรงเรียนใดยังไม่ส่งรายชื่อครู และโรงเรียนใดยังไม่ส่งแผนการจัดกิจกรรม</p>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- แถบความคืบหน้าภาพรวม -->
+    <div class="sec-heading">
+      <div class="sec-icon">📊</div>
+      <div class="sec-text">ภาพรวมความคืบหน้า</div>
+    </div>
+
+    <div id="track-summary">
+      <div class="summary-bar">
+        <div class="summary-bar-label">🏫 โรงเรียนที่ส่งรายชื่อครูแล้ว</div>
+        <div class="progress-track-bg">
+          <div class="progress-track-fill green" id="prog-registered" style="width:0%"></div>
+        </div>
+        <div class="summary-bar-num" id="prog-registered-txt">0/0</div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-bar-label">📄 โรงเรียนที่ส่งแผนการจัดกิจกรรมแล้ว</div>
+        <div class="progress-track-bg">
+          <div class="progress-track-fill yellow" id="prog-plans" style="width:0%"></div>
+        </div>
+        <div class="summary-bar-num" id="prog-plans-txt">0/0</div>
+      </div>
+    </div>
+
+    <!-- สามคอลัมน์: ยังไม่ส่งรายชื่อ / มีครูแต่ไม่ส่งแผน / ครบถ้วนแล้ว -->
+    <div class="sec-heading" style="margin-top:2rem">
+      <div class="sec-icon">🔍</div>
+      <div class="sec-text">รายละเอียดแต่ละโรงเรียน</div>
+    </div>
+
+    <div class="track-grid" id="track-grid">
+      <!-- ยังไม่มีครูเลย -->
+      <div class="track-card">
+        <div class="track-card-header red">
+          <span style="font-size:20px">🔴</span>
+          <div>
+            <div class="track-card-title red">โรงเรียนที่มีรายชื่อครูยังไม่ครบ</div>
+            <div style="font-size:11px;color:#b91c1c;margin-top:2px;line-height:1.4">คลิกที่โรงเรียนเพื่อดูว่าขาดระดับชั้นใด / วิชาใด</div>
+          </div>
+          <div class="track-count red" id="cnt-no-teacher">—</div>
+        </div>
+        <div class="track-list" id="list-no-teacher">
+          <div class="track-item" style="justify-content:center;color:var(--gray400)">กำลังโหลด...</div>
+        </div>
+      </div>
+
+      <!-- มีครูแต่ยังไม่ส่งแผน -->
+      <div class="track-card">
+        <div class="track-card-header yellow">
+          <span style="font-size:20px">🟡</span>
+          <div>
+            <div class="track-card-title yellow">โรงเรียนที่มีครูออกแบบกิจกรรมการเรียนรู้</div>
+            <div style="font-size:11px;color:#92400e;margin-top:2px;line-height:1.4">เพื่อพัฒนาสมรรถนะความฉลาดรู้ตามแนวทางการประเมิน PISA</div>
+          </div>
+          <div class="track-count yellow" id="cnt-no-plan">—</div>
+        </div>
+        <div class="track-list" id="list-no-plan">
+          <div class="track-item" style="justify-content:center;color:var(--gray400)">กำลังโหลด...</div>
+        </div>
+      </div>
+
+      <!-- ครบถ้วนแล้ว — ทั้งมีครูและส่งแผนแล้ว -->
+      <div class="track-card" style="grid-column:1/-1">
+        <div class="track-card-header green">
+          <span style="font-size:20px">🟢</span>
+          <div>
+            <div class="track-card-title green">ครบถ้วน — มีครูและส่งแผนแล้ว</div>
+            <div style="font-size:11px;color:#14532d;margin-top:2px">โรงเรียนที่ดำเนินการครบถ้วนแล้ว</div>
+          </div>
+          <div class="track-count green" id="cnt-complete">—</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+          <div class="track-list" id="list-complete" style="max-height:none;display:contents">
+            <div class="track-item" style="justify-content:center;color:var(--gray400)">กำลังโหลด...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- หน้าอัปโหลด -->
 <div id="page-upload" class="page">
   <div class="upload-hero">
     <div class="upload-hero-inner">
-      <h2>📤 อัปโหลดแผนการจัดกิจกรรมการเรียนรู้</h2>
+      <h2>📤 การจัดกิจกรรมการเรียนรู้</h2>
       <p>กรุณากรอกข้อมูลให้ตรงกับที่ท่านลงทะเบียนไว้ในระบบ</p>
     </div>
   </div>
@@ -579,14 +747,9 @@
         <label>กลุ่มสาระการเรียนรู้ <span class="req">*</span></label>
         <select id="up-subject">
           <option value="">— เลือกกลุ่มสาระ —</option>
-          <option>คณิตศาสตร์</option>
-          <option>วิทยาศาสตร์และเทคโนโลยี</option>
           <option>ภาษาไทย</option>
-          <option>ภาษาต่างประเทศ</option>
-          <option>สังคมศึกษา ศาสนาและวัฒนธรรม</option>
-          <option>สุขศึกษาและพลศึกษา</option>
-          <option>ศิลปะ</option>
-          <option>การงานอาชีพ</option>
+          <option>วิทยาศาสตร์และเทคโนโลยี</option>
+          <option>คณิตศาสตร์</option>
         </select>
       </div>
       <hr class="divider"/>
@@ -660,143 +823,233 @@ var SCHOOL_LIST=[
 });
 
 function switchTab(tab){
-  document.querySelectorAll('.nav-tab').forEach(function(t,i){t.classList.toggle('active',['dashboard','upload'][i]===tab);});
-  document.getElementById('page-dashboard').classList.toggle('active',tab==='dashboard');
-  document.getElementById('page-upload').classList.toggle('active',tab==='upload');
-}
-
-var allData=[],filtered=[],currentPage=1,PAGE_SIZE=25;
-var chartSubj=null,chartRank=null,chartSchool=null;
-var COLORS=['#1a65c5','#f59e0b','#7bd6f9','#e879a8','#22c55e','#8b5cf6','#f97316','#0ea5e9','#84cc16','#6366f1','#14b8a6'];
-
-function setStatus(msg,state){document.getElementById('status-txt').textContent=msg;document.getElementById('dot').className='dot '+(state||'');}
-
-function fetchData(){
-  setStatus('กำลังดึงข้อมูลจาก Google Sheet...','spin');
-  var cb='cb_'+Date.now(),script=document.createElement('script');
-  script.src=SCRIPT_URL+'?action=read&callback='+cb;
-  var t=setTimeout(function(){setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง','err');try{document.head.removeChild(script);delete window[cb];}catch(e){}},15000);
-  window[cb]=function(res){
-    clearTimeout(t);try{document.head.removeChild(script);}catch(e){}delete window[cb];
-    if(res.status==='success'){
-      allData=res.data||[];populateFilters();applyFilter();updateStats();
-      ['stats','toolbar','charts-section','table-section'].forEach(function(id){
-        var el=document.getElementById(id);if(el)el.style.display=id==='stats'?'grid':id==='toolbar'?'flex':'block';
-      });
-      document.getElementById('pagination').style.display='flex';
-      setStatus('โหลดสำเร็จ — '+allData.length+' รายการ (อัปเดต: '+new Date().toLocaleTimeString('th-TH')+')','ok');
-    } else setStatus('เกิดข้อผิดพลาด','err');
-  };
-  script.onerror=function(){clearTimeout(t);setStatus('เชื่อมต่อไม่ได้','err');try{document.head.removeChild(script);delete window[cb];}catch(e){}};
-  document.head.appendChild(script);
-}
-
-function populateFilters(){
-  var s=[...new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean))].sort(function(a,b){return a.localeCompare(b,'th');});
-  document.getElementById('fil-subj').innerHTML='<option value="">กลุ่มสาระทั้งหมด</option>'+s.map(function(x){return'<option value="'+x+'">'+x+'</option>';}).join('');
-}
-
-function applyFilter(){
-  var q=(document.getElementById('search').value||'').toLowerCase();
-  var sc=document.getElementById('fil-school').value;
-  var su=document.getElementById('fil-subj').value;
-  var pl=document.getElementById('fil-plan').value;
-  filtered=allData.filter(function(r){
-    return(!q||Object.values(r).some(function(v){return String(v).toLowerCase().includes(q);}))&&
-      (!sc||r['โรงเรียน']===sc)&&(!su||r['กลุ่มสาระการเรียนรู้']===su)&&
-      (!pl||(pl==='yes'?!!(r['ลิ้งก์แผนการสอน']||'').trim():!(r['ลิ้งก์แผนการสอน']||'').trim()));
+  document.querySelectorAll('.nav-tab').forEach(function(t,i){
+    t.classList.toggle('active',['dashboard','tracking','upload'][i]===tab);
   });
-  currentPage=1;renderTable();renderCharts();
-  var c=document.getElementById('filtered-count');if(c)c.textContent=filtered.length+' รายการ';
+  document.getElementById('page-dashboard').classList.toggle('active',tab==='dashboard');
+  document.getElementById('page-tracking').classList.toggle('active',tab==='tracking');
+  document.getElementById('page-upload').classList.toggle('active',tab==='upload');
+  // เมื่อเปิดหน้าติดตาม ให้วาดข้อมูลทันที
+  if(tab==='tracking') renderTracking();
 }
 
-function updateStats(){
-  document.getElementById('s-total').textContent=allData.length.toLocaleString();
-  document.getElementById('s-schools').textContent=new Set(allData.map(function(r){return r['โรงเรียน'];}).filter(Boolean)).size;
-  document.getElementById('s-subjects').textContent=new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean)).size;
-  document.getElementById('s-uploaded').textContent=allData.filter(function(r){return!!(r['ลิ้งก์แผนการสอน']||'').trim();}).length;
-}
+// ===== ฟังก์ชันหน้าติดตาม =====
+// เปรียบเทียบ SCHOOL_LIST (รายชื่อโรงเรียนทั้งหมด) กับ allData (ข้อมูลจาก Sheet)
+// แบ่งเป็น 3 กลุ่ม: ไม่มีครูเลย / มีครูแต่ไม่ส่งแผน / ครบถ้วน
+function renderTracking(){
+  var totalSchools = SCHOOL_LIST.length;
 
-function cnt(data,key){
-  var m={};data.forEach(function(r){var v=r[key]||'(ไม่ระบุ)';m[v]=(m[v]||0)+1;});
-  return Object.entries(m).map(function(e){return{label:e[0],value:e[1]};}).sort(function(a,b){return b.value-a.value;});
-}
+  // สร้าง map: ชื่อโรงเรียน → {teachers: [], hasAnyPlan: bool}
+  var schoolMap = {};
+  SCHOOL_LIST.forEach(function(s){ schoolMap[s] = {teachers:[], hasAnyPlan:false}; });
 
-function renderCharts(){
-  /* --- แผนภูมิกลุ่มสาระ (bar) --- */
-  var sd=cnt(filtered,'กลุ่มสาระการเรียนรู้');
-  if(chartSubj)chartSubj.destroy();
-  chartSubj=new Chart(document.getElementById('chart-subj'),{type:'bar',
-    data:{labels:sd.map(function(d){return d.label;}),datasets:[{
-      data:sd.map(function(d){return d.value;}),
-      backgroundColor:sd.map(function(_,i){return COLORS[i%COLORS.length]+'bb';}),
-      borderColor:sd.map(function(_,i){return COLORS[i%COLORS.length];}),
-      borderWidth:1.5,borderRadius:10,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน ('+Math.round(c.raw/(filtered.length||1)*100)+'%)';}}}},
-      scales:{x:{grid:{display:false},ticks:{font:{family:'Sarabun',size:12}}},
-              y:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},grid:{color:'rgba(26,101,197,.07)'},border:{display:false}}}}});
+  // วนข้อมูลครูทั้งหมดจาก Sheet
+  allData.forEach(function(r){
+    var sc = (r['โรงเรียน']||''). trim();
+    if(!schoolMap[sc]) schoolMap[sc] = {teachers:[], hasAnyPlan:false}; // โรงเรียนนอก list
+    schoolMap[sc].teachers.push(r);
+    if((r['ลิ้งก์แผนการสอน']||''). trim()) schoolMap[sc].hasAnyPlan = true;
+  });
 
-  /* --- แผนภูมิวิทยฐานะ (doughnut) --- */
-  var rd=cnt(filtered,'วิทยฐานะ');
-  if(chartRank)chartRank.destroy();
-  chartRank=new Chart(document.getElementById('chart-rank'),{type:'doughnut',
-    data:{labels:rd.map(function(d){return d.label;}),datasets:[{
-      data:rd.map(function(d){return d.value;}),
-      backgroundColor:rd.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
-      borderColor:'#fff',borderWidth:3,hoverOffset:10}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
-      plugins:{legend:{position:'bottom',labels:{font:{family:'Sarabun',size:12},padding:14,boxWidth:12,usePointStyle:true}},
-               tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.raw+' คน';}}}}}});
+  // แบ่งกลุ่ม
+  var noTeacher = [];   // ยังไม่มีครูลงทะเบียนเลย
+  var noPlan    = [];   // มีครูแต่ยังไม่มีแผนแม้แต่คนเดียว
+  var complete  = [];   // มีครูและมีแผนอย่างน้อย 1 คน
 
-  /* --- Top 10 โรงเรียน (horizontal bar) --- */
-  var td=cnt(filtered,'โรงเรียน').slice(0,10);
-  if(chartSchool)chartSchool.destroy();
-  chartSchool=new Chart(document.getElementById('chart-school'),{type:'bar',
-    data:{labels:td.map(function(d){return d.label;}),datasets:[{
-      data:td.map(function(d){return d.value;}),
-      backgroundColor:'#7bd6f9bb',borderColor:'#5aa8e8',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน';}}}},
-      scales:{x:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},grid:{color:'rgba(26,101,197,.07)'},border:{display:false}},
-              y:{grid:{display:false},ticks:{font:{family:'Sarabun',size:11},
-                callback:function(v){var l=td[v]?td[v].label:'';return l.length>14?l.substring(0,14)+'…':l;}}}}}});
-}
+  SCHOOL_LIST.forEach(function(s){
+    var info = schoolMap[s];
+    if(info.teachers.length === 0)       noTeacher.push(s);
+    else if(!info.hasAnyPlan)            noPlan.push({name:s, count:info.teachers.length});
+    else                                 complete.push({name:s, count:info.teachers.length});
+  });
 
-function renderTable(){
-  var start=(currentPage-1)*PAGE_SIZE,page=filtered.slice(start,start+PAGE_SIZE),total=Math.ceil(filtered.length/PAGE_SIZE);
-  if(!page.length){
-    document.getElementById('tbody').innerHTML='<tr><td colspan="7" class="empty"><span class="empty-icon">🔍</span>ไม่พบข้อมูล</td></tr>';
-    document.getElementById('page-info').textContent='';return;
+  // --- อัปเดต progress bars ---
+  var registeredSchools = totalSchools - noTeacher.length;
+  var pctReg = Math.round(registeredSchools / totalSchools * 100);
+  document.getElementById('prog-registered').style.width = pctReg + '%';
+  document.getElementById('prog-registered-txt').textContent = registeredSchools + '/' + totalSchools;
+
+  var pctPlan = Math.round(complete.length / totalSchools * 100);
+  document.getElementById('prog-plans').style.width = pctPlan + '%';
+  document.getElementById('prog-plans-txt').textContent = complete.length + '/' + totalSchools;
+
+  // --- จำนวนหัวข้อแต่ละกลุ่ม ---
+  document.getElementById('cnt-no-teacher').textContent = noTeacher.length + ' แห่ง';
+  document.getElementById('cnt-no-plan').textContent    = noPlan.length    + ' แห่ง';
+  document.getElementById('cnt-complete').textContent   = complete.length  + ' แห่ง';
+
+  // ─────────────────────────────────────────────────────────────
+  //  กลุ่มที่ 1: โรงเรียนที่รายชื่อครู "ยังไม่ครบ"
+  //  หมายความว่า: ยังขาดครูในบาง "วิชา × ระดับชั้น" ที่ต้องครอบคลุม
+  //  3 วิชา PISA: ภาษาไทย, วิทยาศาสตร์และเทคโนโลยี, คณิตศาสตร์
+  //  3 ระดับชั้น: ป.4, ป.5, ป.6
+  //  รวม 9 ช่องต่อโรงเรียน — ถ้าขาดแม้แต่ช่องเดียว จัดเป็น "ยังไม่ครบ"
+  // ─────────────────────────────────────────────────────────────
+  var PISA_SUBJECTS = ['ภาษาไทย','วิทยาศาสตร์และเทคโนโลยี','คณิตศาสตร์'];
+  var PISA_GRADES   = ['ป.4','ป.5','ป.6'];
+
+  // สร้าง map: school → Set ของ "วิชา|ระดับชั้น" ที่มีครูแล้ว
+  var coverageMap = {};
+  SCHOOL_LIST.forEach(function(s){ coverageMap[s] = new Set(); });
+  allData.forEach(function(r){
+    var sc    = (r['โรงเรียน']||'').trim();
+    var subj  = (r['กลุ่มสาระการเรียนรู้']||'').trim();
+    var grade = (r['ระดับชั้นที่สอน']||'').trim();
+    if(!coverageMap[sc]) coverageMap[sc] = new Set();
+    // ระดับชั้นที่สอนอาจเป็น "ป.4, ป.5, ป.6" หรือ "ป.4-ป.6" ก็ได้
+    // ตรวจทุก grade ว่าปรากฏใน string นั้นไหม
+    PISA_GRADES.forEach(function(g){
+      if(grade.indexOf(g) !== -1) coverageMap[sc].add(subj+'|'+g);
+    });
+  });
+
+  // แยกโรงเรียน: ครบ 9 ช่อง = noTeacher (แต่ความจริงคือ "ครบ PISA")
+  // ไม่ครบ = แสดงรายการที่ขาด พร้อม modal เมื่อคลิก
+  var incomplete = []; // {name, missing: [{subj,grade},...], have: count}
+  var noRegister = []; // ยังไม่มีข้อมูลเลยแม้แต่คนเดียว
+
+  SCHOOL_LIST.forEach(function(s){
+    var info = schoolMap[s];
+    if(info.teachers.length === 0){
+      noRegister.push(s);
+      return;
+    }
+    // หา combination ที่ขาด
+    var missing = [];
+    PISA_SUBJECTS.forEach(function(subj){
+      PISA_GRADES.forEach(function(grade){
+        if(!coverageMap[s].has(subj+'|'+grade)) missing.push({subj:subj, grade:grade});
+      });
+    });
+    if(missing.length > 0) incomplete.push({name:s, missing:missing, have:info.teachers.length});
+  });
+
+  // รวม noRegister + incomplete เป็น "ยังไม่ครบ"
+  var notComplete = noRegister.map(function(s){ return {name:s, missing:[], have:0, noData:true}; })
+    .concat(incomplete);
+
+  document.getElementById('cnt-no-teacher').textContent = notComplete.length + ' แห่ง';
+
+  if(notComplete.length === 0){
+    document.getElementById('list-no-teacher').innerHTML =
+      '<div class="track-item" style="justify-content:center;color:#14532d">✅ ทุกโรงเรียนมีครูครบแล้ว</div>';
+  } else {
+    document.getElementById('list-no-teacher').innerHTML = notComplete.map(function(r,i){
+      var badge = r.noData
+        ? '<span class="track-item-count red">ไม่มีข้อมูล</span>'
+        : '<span class="track-item-count red">ขาด '+r.missing.length+' ช่อง</span>';
+      // สร้าง tooltip แสดงรายการที่ขาด
+      var missingStr = r.noData ? 'ยังไม่มีครูลงทะเบียนเลย'
+        : r.missing.map(function(m){ return m.grade+' '+m.subj; }).join(', ');
+      return '<div class="track-item" style="cursor:pointer" '+
+        'onclick="showMissingDetail(''+r.name.replace(/'/g,"\'")+'')" '+
+        'title="คลิกเพื่อดูรายละเอียด">'+ 
+        '<div class="track-dot red"></div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-weight:600">'+(i+1)+'. '+r.name+'</div>'+
+          (r.noData ? '' : '<div style="font-size:11px;color:#b91c1c;margin-top:1px">ขาด: '+missingStr.substring(0,60)+(missingStr.length>60?'...':'')+'</div>')+
+        '</div>'+
+        badge+
+        '</div>';
+    }).join('');
   }
-  document.getElementById('tbody').innerHTML=page.map(function(r,i){
-    var lk=(r['ลิ้งก์แผนการสอน']||'').trim();
-    var pc=lk?'<a href="'+lk+'" target="_blank" rel="noopener noreferrer" class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">📄 ดูกิจกรรมการเรียนรู้ ↗</a>':'';
-    return'<tr><td class="num">'+(start+i+1)+'</td>'+
-      '<td><span class="badge b-school">'+(r['โรงเรียน']||'—')+'</span></td>'+
-      '<td style="font-weight:600">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
-      '<td><span class="badge b-rank">'+(r['วิทยฐานะ']||'—')+'</span></td>'+
-      '<td><span class="badge b-subj">'+(r['กลุ่มสาระการเรียนรู้']||'—')+'</span></td>'+
-      '<td>'+(r['ระดับชั้นที่สอน']||'—')+'</td><td>'+pc+'</td></tr>';
-  }).join('');
-  document.getElementById('page-info').textContent=
-    'หน้า '+currentPage+'/'+total+' · '+(start+1)+'–'+Math.min(start+PAGE_SIZE,filtered.length)+' จาก '+filtered.length+' รายการ';
-  document.getElementById('btn-prev').disabled=currentPage<=1;
-  document.getElementById('btn-next').disabled=currentPage>=total;
+
+  // เก็บข้อมูล missing ไว้ใน global สำหรับ modal
+  window._missingData = {};
+  notComplete.forEach(function(r){ window._missingData[r.name] = r; });
+
+  // ─────────────────────────────────────────────────────────────
+  //  กลุ่มที่ 2: มีครูแล้วและ PISA ครบ แต่ยังไม่มีแผนการจัดกิจกรรม
+  // ─────────────────────────────────────────────────────────────
+  document.getElementById('cnt-no-plan').textContent = noPlan.length + ' แห่ง';
+  document.getElementById('list-no-plan').innerHTML = noPlan.length
+    ? noPlan.map(function(r,i){
+        return '<div class="track-item">'+
+          '<div class="track-dot yellow"></div>'+
+          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>'+
+          '<span class="track-item-count yellow">'+r.count+' คน</span>'+
+          '</div>';
+      }).join('')
+    : '<div class="track-item" style="justify-content:center;color:#14532d">✅ ทุกโรงเรียนส่งแผนแล้ว</div>';
+
+  // ─────────────────────────────────────────────────────────────
+  //  กลุ่มที่ 3: ครบถ้วน
+  // ─────────────────────────────────────────────────────────────
+  document.getElementById('cnt-complete').textContent = complete.length + ' แห่ง';
+  var completeEl = document.getElementById('list-complete');
+  completeEl.style.display = '';
+  completeEl.innerHTML = complete.length
+    ? complete.map(function(r,i){
+        return '<div class="track-item">'+
+          '<div class="track-dot green"></div>'+
+          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>'+
+          '<span class="track-item-count green">'+r.count+' คน</span>'+
+          '</div>';
+      }).join('')
+    : '<div class="track-item" style="justify-content:center;color:var(--gray400)">ยังไม่มีโรงเรียนที่ครบถ้วน</div>';
 }
 
-function changePage(dir){
-  var total=Math.ceil(filtered.length/PAGE_SIZE);
-  currentPage=Math.max(1,Math.min(total,currentPage+dir));renderTable();
+// ─────────────────────────────────────────────────────────────
+//  Modal แสดงรายละเอียดที่ขาดเมื่อคลิกชื่อโรงเรียน
+// ─────────────────────────────────────────────────────────────
+function showMissingDetail(schoolName){
+  var data = window._missingData && window._missingData[schoolName];
+  if(!data) return;
+
+  var PISA_SUBJECTS_SHORT = ['ภาษาไทย','วิทยาศาสตร์','คณิตศาสตร์'];
+  var PISA_SUBJECTS_FULL  = ['ภาษาไทย','วิทยาศาสตร์และเทคโนโลยี','คณิตศาสตร์'];
+  var GRADES = ['ป.4','ป.5','ป.6'];
+
+  var bodyHtml = '';
+  if(data.noData){
+    bodyHtml = '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">'+
+      '⚠️ ยังไม่มีครูลงทะเบียนในระบบเลย</div>';
+  } else {
+    // สร้าง grid 3×3 (วิชา × ระดับชั้น) แสดง ✅ / ❌
+    var missingSet = new Set(data.missing.map(function(m){ return m.subj+'|'+m.grade; }));
+    bodyHtml += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem">';
+    bodyHtml += '<thead><tr><th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0">วิชา \ ระดับชั้น</th>';
+    GRADES.forEach(function(g){ bodyHtml += '<th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0;text-align:center">'+g+'</th>'; });
+    bodyHtml += '</tr></thead><tbody>';
+    PISA_SUBJECTS_FULL.forEach(function(subj,si){
+      bodyHtml += '<tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:600">'+PISA_SUBJECTS_SHORT[si]+'</td>';
+      GRADES.forEach(function(g){
+        var missing = missingSet.has(subj+'|'+g);
+        bodyHtml += '<td style="padding:8px;border:1px solid #e2e8f0;text-align:center;background:'+(missing?'#fff5f5':'#f0fdf4')+'">'+
+          (missing ? '<span style="color:#ef4444;font-size:18px">❌</span>' : '<span style="color:#22c55e;font-size:18px">✅</span>')+
+          '</td>';
+      });
+      bodyHtml += '</tr>';
+    });
+    bodyHtml += '</tbody></table>';
+    bodyHtml += '<div style="font-size:12px;color:#64748b">❌ = ยังไม่มีครูลงทะเบียน &nbsp;|&nbsp; ✅ = มีครูลงทะเบียนแล้ว</div>';
+  }
+
+  // สร้าง modal
+  var existing = document.getElementById('missing-modal');
+  if(existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'missing-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem';
+  modal.innerHTML =
+    '<div style="background:#fff;border-radius:16px;padding:1.75rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">'+
+        '<span style="font-size:22px">🏫</span>'+
+        '<div style="flex:1">'+
+          '<div style="font-size:16px;font-weight:700;color:#0d2a4a">'+schoolName+'</div>'+
+          '<div style="font-size:12px;color:#64748b;margin-top:2px">ความครอบคลุมครู PISA (3 วิชา × 3 ระดับชั้น)</div>'+
+        '</div>'+
+        '<button onclick="document.getElementById('missing-modal').remove()" '+
+          'style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>'+
+      '</div>'+
+      bodyHtml+
+    '</div>';
+  // คลิกนอก modal ปิด
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
 }
 
-function exportCSV(){
-  var h=['โรงเรียน','ชื่อ-นามสกุล','วิทยฐานะ','กลุ่มสาระการเรียนรู้','ระดับชั้นที่สอน','ลิ้งก์แผนการสอน'];
-  var rows=filtered.map(function(r){return h.map(function(k){return'"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(',');});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\uFEFF'+h.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));
-  a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';a.click();
-}
 
 // ===== ฟังก์ชันสำหรับกรอกลิ้งก์ (แทนการอัปโหลดไฟล์) =====
 
