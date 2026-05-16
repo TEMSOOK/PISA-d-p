@@ -591,32 +591,28 @@
       </div>
       <hr class="divider"/>
       <div class="form-group">
-        <label>ไฟล์แผนการจัดกิจกรรม <span class="req">*</span>
-          <span style="color:var(--gray400);font-weight:400"> — PDF, DOC, DOCX, PPT, PPTX (ไม่เกิน 20 MB)</span>
-        </label>
-        <div class="dropzone" id="dz"
-          onclick="document.getElementById('fi').click()"
-          ondragover="event.preventDefault();this.classList.add('over')"
-          ondragleave="this.classList.remove('over')"
-          ondrop="onDrop(event)">
-          <span class="dz-icon">📁</span>
-          <div class="dz-text">ลากไฟล์มาวางที่นี่ หรือ <strong>คลิกเพื่อเลือกไฟล์</strong></div>
-        </div>
-        <input type="file" id="fi" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx" onchange="pickFile(this.files[0])">
-        <div class="file-info" id="finfo">
-          <span style="font-size:26px" id="ficon">📄</span>
-          <div style="min-width:0">
-            <div style="font-weight:700;word-break:break-all" id="fname"></div>
-            <div style="font-size:12px;margin-top:2px;opacity:.7" id="fsize"></div>
+        <label>🔗 ลิ้งก์แผนการจัดกิจกรรมการเรียนรู้ <span class="req">*</span></label>
+        <input type="text" id="up-link"
+          placeholder="วางลิ้งก์ที่นี่ เช่น https://drive.google.com/..."
+          oninput="validateLink()"/>
+        <p class="form-hint">
+          วิธีรับลิ้งก์ — อัปโหลดไฟล์ขึ้น Google Drive → คลิกขวาที่ไฟล์ → Share → Copy link
+        </p>
+        <div id="link-preview" style="display:none;margin-top:10px;padding:10px 14px;
+          background:var(--sky3);border:1.5px solid var(--sky2);border-radius:10px;
+          font-size:13px;align-items:center;gap:10px">
+          <span style="font-size:20px">🔗</span>
+          <div style="min-width:0;flex:1">
+            <div style="font-weight:600;color:var(--blue);word-break:break-all;font-size:12px" id="link-text"></div>
           </div>
-          <button class="file-clear" onclick="clearFile()">✕</button>
+          <a id="link-test" href="#" target="_blank" rel="noopener noreferrer"
+            style="flex-shrink:0;font-size:12px;color:var(--blue);font-weight:700;
+                   background:var(--sky2);padding:4px 10px;border-radius:6px;text-decoration:none">
+            ทดสอบ ↗
+          </a>
         </div>
       </div>
-      <div class="progress-wrap" id="pw">
-        <div class="progress-bg"><div class="progress-fill" id="pf"></div></div>
-        <div class="progress-label" id="pl">กำลังอัปโหลด...</div>
-      </div>
-      <button class="btn-upload" id="ubtn" onclick="uploadFile()">📤 อัปโหลดแผนการสอน</button>
+      <button class="btn-upload" id="ubtn" onclick="submitLink()">💾 บันทึกแผนการจัดกิจกรรม</button>
       <div class="upload-alert" id="up-alert"></div>
     </div>
   </div>
@@ -802,56 +798,70 @@ function exportCSV(){
   a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';a.click();
 }
 
-var selectedFile=null;
-function onDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('over');pickFile(e.dataTransfer.files[0]);}
-function pickFile(f){
-  if(!f)return;
-  if(!/\.(pdf|doc|docx|ppt|pptx)$/i.test(f.name)){showAlert('ไฟล์ประเภทนี้ไม่รองรับ','err');return;}
-  if(f.size>20*1024*1024){showAlert('ไฟล์เกิน 20 MB','err');return;}
-  selectedFile=f;
-  var ic={pdf:'📕',doc:'📘',docx:'📘',ppt:'📙',pptx:'📙'};
-  var ext=f.name.split('.').pop().toLowerCase();
-  document.getElementById('ficon').textContent=ic[ext]||'📄';
-  document.getElementById('fname').textContent=f.name;
-  document.getElementById('fsize').textContent=(f.size/1024/1024).toFixed(2)+' MB';
-  document.getElementById('finfo').classList.add('show');
-  document.getElementById('up-alert').style.display='none';
-}
-function clearFile(){selectedFile=null;document.getElementById('fi').value='';document.getElementById('finfo').classList.remove('show');}
+// ===== ฟังก์ชันสำหรับกรอกลิ้งก์ (แทนการอัปโหลดไฟล์) =====
 
-function uploadFile(){
-  var sc=document.getElementById('up-school').value.trim();
-  var nm=document.getElementById('up-name').value.trim();
-  var su=document.getElementById('up-subject').value.trim();
-  if(!sc||!nm||!su||!selectedFile){showAlert('กรุณากรอกข้อมูลให้ครบและเลือกไฟล์','err');return;}
-  var btn=document.getElementById('ubtn');btn.disabled=true;btn.textContent='⏳ กำลังอัปโหลด...';
-  var pw=document.getElementById('pw'),pf=document.getElementById('pf'),pl=document.getElementById('pl');
-  pw.classList.add('show');var prog=0;
-  var timer=setInterval(function(){prog=Math.min(prog+Math.random()*10,85);pf.style.width=prog+'%';pl.textContent='กำลังอัปโหลด... '+Math.round(prog)+'%';},400);
-  var reader=new FileReader();
-  reader.onload=function(){
-    var b64=reader.result.split(',')[1];
-    fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({school:sc,name:nm,subject:su,fileData:b64,fileName:selectedFile.name,mimeType:selectedFile.type})})
-    .then(function(r){return r.json();})
-    .then(function(j){
-      clearInterval(timer);pf.style.width='100%';pl.textContent='สำเร็จ! ✓';
-      if(j.status==='success'){
-        saveLinkToSheet(sc,nm,j.url);
-        showAlert('✅ อัปโหลดสำเร็จ!<br><a href="'+j.url+'" target="_blank">คลิกเปิดไฟล์ที่อัปโหลด →</a>','ok');
-        clearFile();
-      } else throw new Error(j.message||'error');
-    })
-    .catch(function(e){clearInterval(timer);pw.classList.remove('show');showAlert('❌ ไม่สำเร็จ: '+e.message,'err');})
-    .finally(function(){btn.disabled=false;btn.textContent='📤 อัปโหลดแผนการสอน';setTimeout(function(){pw.classList.remove('show');},3000);});
-  };
-  reader.readAsDataURL(selectedFile);
+// แสดง preview ลิ้งก์แบบ real-time เมื่อครูพิมพ์/วาง
+function validateLink() {
+  var url = document.getElementById('up-link').value.trim();
+  var preview = document.getElementById('link-preview');
+  var linkText = document.getElementById('link-text');
+  var linkTest = document.getElementById('link-test');
+  if (url.length > 10 && url.startsWith('http')) {
+    preview.style.display = 'flex';
+    linkText.textContent = url;
+    linkTest.href = url;
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// บันทึกลิ้งก์ลง Google Sheet ผ่าน JSONP (ไม่มีปัญหา CORS เลย)
+function submitLink() {
+  var sc  = document.getElementById('up-school').value.trim();
+  var nm  = document.getElementById('up-name').value.trim();
+  var su  = document.getElementById('up-subject').value.trim();
+  var url = document.getElementById('up-link').value.trim();
+
+  // ตรวจสอบข้อมูลครบก่อนบันทึก
+  if (!sc || !nm || !su) { showAlert('กรุณากรอกข้อมูลให้ครบทุกช่อง', 'err'); return; }
+  if (!url || !url.startsWith('http')) { showAlert('กรุณาวางลิ้งก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http)', 'err'); return; }
+
+  var btn = document.getElementById('ubtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังบันทึก...';
+
+  // ส่งลิ้งก์ไปบันทึกใน Sheet ผ่าน JSONP
+  saveLinkToSheet(sc, nm, url);
 }
 
 function saveLinkToSheet(sc,nm,url){
   var cb='sv_'+Date.now(),script=document.createElement('script');
   script.src=SCRIPT_URL+'?action=savelink&callback='+cb+'&school='+encodeURIComponent(sc)+'&name='+encodeURIComponent(nm)+'&url='+encodeURIComponent(url);
-  window[cb]=function(){delete window[cb];try{document.head.removeChild(script);}catch(e){}fetchData();};
+  window[cb]=function(res){
+    delete window[cb];
+    try{document.head.removeChild(script);}catch(e){}
+    var btn=document.getElementById('ubtn');
+    if(btn){btn.disabled=false;btn.textContent='💾 บันทึกแผนการจัดกิจกรรม';}
+    if(res && res.status==='success'){
+      // ล้างฟอร์มและแสดงผลสำเร็จ
+      document.getElementById('up-link').value='';
+      document.getElementById('link-preview').style.display='none';
+      showAlert('✅ บันทึกสำเร็จ! ลิ้งก์แผนการจัดกิจกรรมถูกบันทึกลงระบบแล้ว<br><a href="'+url+'" target="_blank" rel="noopener noreferrer">คลิกเพื่อตรวจสอบลิ้งก์ →</a>','ok');
+      fetchData(); // รีโหลดตารางให้เห็น icon ลิ้งก์ทันที
+    } else {
+      showAlert('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง','err');
+    }
+  };
+  // timeout กรณี server ไม่ตอบกลับ
+  setTimeout(function(){
+    if(window[cb]){
+      delete window[cb];
+      try{document.head.removeChild(script);}catch(e){}
+      var btn=document.getElementById('ubtn');
+      if(btn){btn.disabled=false;btn.textContent='💾 บันทึกแผนการจัดกิจกรรม';}
+      showAlert('❌ หมดเวลาเชื่อมต่อ กรุณาลองใหม่','err');
+    }
+  }, 15000);
   document.head.appendChild(script);
 }
 function showAlert(msg,type){var el=document.getElementById('up-alert');el.style.display='block';el.className='upload-alert '+type;el.innerHTML=msg;}
