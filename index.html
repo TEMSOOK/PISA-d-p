@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <title>ครูผู้รับผิดชอบ PISA ป.4–ป.6 | สพป.เชียงใหม่ เขต 2</title>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js?v=1778937935"></script>
   <style>
     /* ============================================================
        COLOR PALETTE — ตามภาพตัวอย่าง
@@ -775,7 +778,7 @@
           </a>
         </div>
       </div>
-      <button class="btn-upload" id="ubtn" onclick="submitLink()">💾 บันทึกแผนการจัดกิจกรรม</button>
+      <button class="btn-upload" id="ubtn" onclick="submitLink()">บันทึกแผนการจัดกิจกรรม</button>
       <div class="upload-alert" id="up-alert"></div>
     </div>
   </div>
@@ -783,6 +786,11 @@
 
 <script>
 var SCRIPT_URL='https://script.google.com/macros/s/AKfycbze4xGIjdPaNjvqdgyf0LELu_iS0ml21rfqd5_l5EzhlPOuhJIKmY5zb1lyShA5iHa5XQ/exec';
+// เพิ่ม cache-busting ใน JSONP request เพื่อป้องกัน browser cache
+function buildURL(action, extra) {
+  extra = extra || '';
+  return SCRIPT_URL + '?action=' + action + '&_t=' + Date.now() + extra;
+}
 var SCHOOL_LIST=[
   'ชลประทานเขื่อนแม่กวงจิราธิวัฒน์อุปถัมภ์','ชุมชนบ้านดง','ชุมชนบ้านโป่ง','ชุมชนบ้านแม่สาบ',
   'ชุมชนสหกรณ์นิคมวิทยา','ชุมชนวัดช่อแล','ทรายทองราษฎร์อุทิศ',
@@ -839,7 +847,7 @@ function fetchData(){
   setStatus('กำลังดึงข้อมูลจาก Google Sheet...','spin');
   var cb='cb_'+Date.now();
   var script=document.createElement('script');
-  script.src=SCRIPT_URL+'?action=read&callback='+cb;
+  script.src=buildURL('read','&callback='+cb);
 
   // timeout 15 วินาที ถ้า server ไม่ตอบกลับ
   var t=setTimeout(function(){
@@ -968,13 +976,13 @@ function renderTable(){
   var total=Math.ceil(filtered.length/PAGE_SIZE);
   if(!page.length){
     document.getElementById('tbody').innerHTML=
-      '<tr><td colspan="7" class="empty"><span class="empty-icon">🔍</span>ไม่พบข้อมูล</td></tr>';
+      '<tr><td colspan="7" class="empty"><span class="empty-icon"></span>ไม่พบข้อมูล</td></tr>';
     document.getElementById('page-info').textContent=''; return;
   }
   document.getElementById('tbody').innerHTML=page.map(function(r,i){
     var lk=(r['ลิ้งก์แผนการสอน']||'').trim();
     var pc=lk?'<a href="'+lk+'" target="_blank" rel="noopener noreferrer" '+
-      'class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">📄 ดูกิจกรรมการเรียนรู้ ↗</a>':'';
+      'class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">ดูกิจกรรมการเรียนรู้</a>':'';
     return'<tr><td class="num">'+(start+i+1)+'</td>'+
       '<td><span class="badge b-school">'+(r['โรงเรียน']||'—')+'</span></td>'+
       '<td style="font-weight:600">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
@@ -1224,7 +1232,7 @@ function showMissingDetail(schoolName){
   modal.innerHTML =
     '<div style="background:#fff;border-radius:16px;padding:1.75rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">'+
-        '<span style="font-size:22px">🏫</span>'+
+        '<span style="font-size:22px"></span>'+
         '<div style="flex:1">'+
           '<div style="font-size:16px;font-weight:700;color:#0d2a4a">'+schoolName+'</div>'+
           '<div style="font-size:12px;color:#64748b;margin-top:2px">ความครอบคลุมครู PISA (3 วิชา × 3 ระดับชั้น)</div>'+
@@ -1283,15 +1291,15 @@ function saveLinkToSheet(sc,nm,url){
     delete window[cb];
     try{document.head.removeChild(script);}catch(e){}
     var btn=document.getElementById('ubtn');
-    if(btn){btn.disabled=false;btn.textContent='💾 บันทึกแผนการจัดกิจกรรม';}
+    if(btn){btn.disabled=false;btn.textContent='บันทึกแผนการจัดกิจกรรม';}
     if(res && res.status==='success'){
       // ล้างฟอร์มและแสดงผลสำเร็จ
       document.getElementById('up-link').value='';
       document.getElementById('link-preview').style.display='none';
-      showAlert('✅ บันทึกสำเร็จ! ลิ้งก์แผนการจัดกิจกรรมถูกบันทึกลงระบบแล้ว<br><a href="'+url+'" target="_blank" rel="noopener noreferrer">คลิกเพื่อตรวจสอบลิ้งก์ →</a>','ok');
+      showAlert('บันทึกสำเร็จ! ลิ้งก์ถูกบันทึกลงระบบแล้ว <a href="'+url+'" target="_blank">คลิกตรวจสอบ</a>','ok');
       fetchData(); // รีโหลดตารางให้เห็น icon ลิ้งก์ทันที
     } else {
-      showAlert('❌ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง','err');
+      showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง','err');
     }
   };
   // timeout กรณี server ไม่ตอบกลับ
@@ -1300,7 +1308,7 @@ function saveLinkToSheet(sc,nm,url){
       delete window[cb];
       try{document.head.removeChild(script);}catch(e){}
       var btn=document.getElementById('ubtn');
-      if(btn){btn.disabled=false;btn.textContent='💾 บันทึกแผนการจัดกิจกรรม';}
+      if(btn){btn.disabled=false;btn.textContent='บันทึกแผนการจัดกิจกรรม';}
       showAlert('❌ หมดเวลาเชื่อมต่อ กรุณาลองใหม่','err');
     }
   }, 15000);
