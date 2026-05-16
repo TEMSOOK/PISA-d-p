@@ -785,478 +785,462 @@
 </div>
 
 <script>
-var SCRIPT_URL='https://script.google.com/macros/s/AKfycbze4xGIjdPaNjvqdgyf0LELu_iS0ml21rfqd5_l5EzhlPOuhJIKmY5zb1lyShA5iHa5XQ/exec';
-// เพิ่ม cache-busting ใน JSONP request เพื่อป้องกัน browser cache
-function buildURL(action, extra) {
-  extra = extra || '';
-  return SCRIPT_URL + '?action=' + action + '&_t=' + Date.now() + extra;
-}
-var SCHOOL_LIST=[
-  'ชลประทานเขื่อนแม่กวงจิราธิวัฒน์อุปถัมภ์','ชุมชนบ้านดง','ชุมชนบ้านโป่ง','ชุมชนบ้านแม่สาบ',
-  'ชุมชนสหกรณ์นิคมวิทยา','ชุมชนวัดช่อแล','ทรายทองราษฎร์อุทิศ',
-  'เจ้าแม่หลวงอุปถัมภ์ 2','เจ้าพ่อหลวงอุปถัมภ์ 7',
-  'บ้านก๋ายน้อย','บ้านกองแหะ','บ้านกาดฮาว','บ้านกิ่วเสือ','บ้านขุนแจ๋',
-  'บ้านต้นผึ้ง','บ้านต้นรุง','บ้านทับเดื่อ','บ้านท่ามะเกี๋ยง','บ้านท่าเกวียน','บ้านทุ่งโป่ง',
-  'บ้านนากู่','บ้านนาบุญโหล่งขอด','บ้านน้ำริน','บ้านบวกจั่น','บ้านบวกเปา',
-  'บ้านบวกหมื้อ','บ้านบ่อแก้ว','บ้านปง(อินทขิลวิทยาคาร)','บ้านปางขุม',
-  'บ้านปางไฮ','บ้านปางไม้แดง','บ้านปางกว้าง','บ้านปางฮ่าง','บ้านปางห้วยตาด',
-  'บ้านป่าก้าง','บ้านป่าตุ้ม','บ้านป่าติ้ว','บ้านป่าไหน่','บ้านป่าบง','บ้านป่าเหมือด',
-  'บ้านผาหมอน','บ้านผึ้ง','บ้านพระนอน','บ้านโปง','บ้านโป่ง','บ้านโป่งแยงใน',
-  'บ้านแจ่งกู่เรือง','บ้านแม่โจ้','บ้านแม่โต๋','บ้านแม่ไคร้','บ้านแม่ขะปู',
-  'บ้านแม่แต','บ้านแม่ตะมาน','บ้านแม่ปั๋ง','บ้านแม่ปาคี','บ้านแม่แฝก','บ้านแม่แมม',
-  'บ้านแม่ยางห้า','บ้านแม่ยางห้า สาขาบ้านเด่นฮ่อม#รร.สาขา .',
-  'บ้านแม่ย่อย(เจียร-สมศรี  วังทองคำ)','บ้านแม่เลา','บ้านแม่แว','บ้านแม่สา',
-  'บ้านแม่แสะ','บ้านแม่เหียะ','บ้านแมโต๋ สาขาบ้านห้วยเต่า#รร.สาขา .',
-  'บ้านแม่ลานคำ','บ้านแม่ลานคำ สาขาบ้านป่าคานอก#รร.สาขา .',
-  'บ้านเมืองก๊ะ','บ้านเมืองกื้ด','บ้านเมืองขอน','บ้านร่มหลวง','บ้านริมใต้',
-  'บ้านสันกลาง','บ้านสันคะยอม','บ้านสันปง','บ้านสันพระเนตร','บ้านสันศรี',
-  'บ้านสะลวงนอก','บ้านศรีงาม','บ้านศรีบุญเรือง','บ้านหลักปัน','บ้านหลวง',
-  'บ้านหนองไคร้','บ้านหนองปลามัน','บ้านหนองปิด','บ้านหนองมะจับ',
-  'บ้านหนองหาร (ทิพวันอุทิศ)','บ้านหัวฝาย','บ้านห้วยบง','บ้านห้วยเกี๋ยง','บ้านห้วยน้ำจาง',
-  'บ้านเจดีย์แม่ครัว','บ้านเป้าวิทยาคาร','ประชาสามัคคีวิทยา','ประดู่วิทยา',
-  'ป่าแป๋วิทยา','ป่าจี้วังแดงวิทยา','พร้าวบูรพา','มูลนิธิมหาราช 5',
-  'ร่ำเปิงวิทยา','รัปปาปอร์ต (ตชด.บำรุงที่ 92)','วัดงิ้วเฒ่า','วัดทรายมูล',
-  'วัดทุ่งหลวง','วัดท่าข้าม','วัดนาเม็ง','วัดบ้านเหล่า','วัดบ้านป้อก','วัดปางเติม',
-  'วัดปางเติมสาขาบ้านขุนสาบ#รร.สาขา .','วัดปางมะกล้วย','วัดยั้งเมิน',
-  'วัดแม่กะ','วัดแม่แก้ดน้อย','วัดแม่เลย','วัดโป่งแยงเฉลิมพระเกียรติ',
-  'วัดสันคะยอม','วัดสันทรายมูล(มงคลวิทยา)','วัดหนองออน','วัดห้วยไร่',
-  'สบเปิงวิทยา','สหกรณ์ดำริ','สันทรายหลวง','สันป่าสักวิทยา',
-  'สันป่ายางวิทยาคาร','สันมหาพนวิทยา'
+/* =====================================================
+   PISA Dashboard — JavaScript
+   ไม่มี emoji ใน JS เพื่อป้องกัน SyntaxError
+   ===================================================== */
+
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze4xGIjdPaNjvqdgyf0LELu_iS0ml21rfqd5_l5EzhlPOuhJIKmY5zb1lyShA5iHa5XQ/exec';
+
+var SCHOOL_LIST = [
+  '\u0e0a\u0e25\u0e1b\u0e23\u0e30\u0e17\u0e32\u0e19\u0e40\u0e02\u0e37\u0e48\u0e2d\u0e19\u0e41\u0e21\u0e48\u0e01\u0e27\u0e07\u0e08\u0e34\u0e23\u0e32\u0e18\u0e34\u0e27\u0e31\u0e12\u0e19\u0e4c\u0e2d\u0e38\u0e1b\u0e16\u0e31\u0e21\u0e20\u0e4c','\u0e0a\u0e38\u0e21\u0e0a\u0e19\u0e1a\u0e49\u0e32\u0e19\u0e14\u0e07','\u0e0a\u0e38\u0e21\u0e0a\u0e19\u0e1a\u0e49\u0e32\u0e19\u0e42\u0e1b\u0e48\u0e07',
+  '\u0e0a\u0e38\u0e21\u0e0a\u0e19\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e2a\u0e32\u0e1a','\u0e0a\u0e38\u0e21\u0e0a\u0e19\u0e2a\u0e2b\u0e01\u0e23\u0e13\u0e4c\u0e19\u0e34\u0e04\u0e21\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e0a\u0e38\u0e21\u0e0a\u0e19\u0e27\u0e31\u0e14\u0e0a\u0e48\u0e2d\u0e41\u0e25',
+  '\u0e17\u0e23\u0e32\u0e22\u0e17\u0e2d\u0e07\u0e23\u0e32\u0e29\u0e0e\u0e4c\u0e2d\u0e38\u0e17\u0e34\u0e28','\u0e40\u0e08\u0e49\u0e32\u0e41\u0e21\u0e48\u0e2b\u0e25\u0e27\u0e07\u0e2d\u0e38\u0e1b\u0e16\u0e31\u0e21\u0e20\u0e4c 2','\u0e40\u0e08\u0e49\u0e32\u0e1e\u0e48\u0e2d\u0e2b\u0e25\u0e27\u0e07\u0e2d\u0e38\u0e1b\u0e16\u0e31\u0e21\u0e20\u0e4c 7',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e01\u0e4b\u0e32\u0e22\u0e19\u0e49\u0e2d\u0e22','\u0e1a\u0e49\u0e32\u0e19\u0e01\u0e2d\u0e07\u0e41\u0e2b\u0e30','\u0e1a\u0e49\u0e32\u0e19\u0e01\u0e32\u0e14\u0e2e\u0e32\u0e27','\u0e1a\u0e49\u0e32\u0e19\u0e01\u0e34\u0e48\u0e27\u0e40\u0e2a\u0e37\u0e2d','\u0e1a\u0e49\u0e32\u0e19\u0e02\u0e38\u0e19\u0e41\u0e08\u0e4b',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e15\u0e49\u0e19\u0e1c\u0e36\u0e49\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e15\u0e49\u0e19\u0e23\u0e38\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e17\u0e31\u0e1a\u0e40\u0e14\u0e37\u0e48\u0e2d','\u0e1a\u0e49\u0e32\u0e19\u0e17\u0e48\u0e32\u0e21\u0e30\u0e40\u0e01\u0e35\u0e4b\u0e22\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e17\u0e48\u0e32\u0e40\u0e01\u0e27\u0e35\u0e22\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e17\u0e38\u0e48\u0e07\u0e42\u0e1b\u0e48\u0e07',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e19\u0e32\u0e01\u0e39\u0e48','\u0e1a\u0e49\u0e32\u0e19\u0e19\u0e32\u0e1a\u0e38\u0e0d\u0e42\u0e2b\u0e25\u0e48\u0e07\u0e02\u0e2d\u0e14','\u0e1a\u0e49\u0e32\u0e19\u0e19\u0e49\u0e33\u0e23\u0e34\u0e19',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e1a\u0e27\u0e01\u0e08\u0e31\u0e48\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e1a\u0e27\u0e01\u0e40\u0e1b\u0e32','\u0e1a\u0e49\u0e32\u0e19\u0e1a\u0e27\u0e01\u0e2b\u0e21\u0e37\u0e49\u0e2d','\u0e1a\u0e49\u0e32\u0e19\u0e1a\u0e48\u0e2d\u0e41\u0e01\u0e49\u0e27',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e07(\u0e2d\u0e34\u0e19\u0e17\u0e02\u0e34\u0e25\u0e27\u0e34\u0e17\u0e22\u0e32\u0e04\u0e32\u0e23)','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e02\u0e38\u0e21','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e44\u0e2e','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e44\u0e21\u0e49\u0e41\u0e14\u0e07',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e01\u0e27\u0e49\u0e32\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e2e\u0e48\u0e32\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e32\u0e07\u0e2b\u0e49\u0e27\u0e22\u0e15\u0e32\u0e14',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e01\u0e49\u0e32\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e15\u0e38\u0e49\u0e21','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e15\u0e34\u0e49\u0e27','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e44\u0e2b\u0e19\u0e48','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e1a\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e40\u0e2b\u0e21\u0e37\u0e2d\u0e14',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e1c\u0e32\u0e2b\u0e21\u0e2d\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e1c\u0e36\u0e49\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e1e\u0e23\u0e30\u0e19\u0e2d\u0e19',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e42\u0e1b\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e42\u0e1b\u0e48\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e42\u0e1b\u0e48\u0e07\u0e41\u0e22\u0e07\u0e43\u0e19',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e08\u0e48\u0e07\u0e01\u0e39\u0e48\u0e40\u0e23\u0e37\u0e2d\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e42\u0e08\u0e49','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e42\u0e15\u0e4b','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e44\u0e04\u0e23\u0e49','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e02\u0e30\u0e1b\u0e39',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e41\u0e15','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e15\u0e30\u0e21\u0e32\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e1b\u0e4b\u0e31\u0e4b\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e1b\u0e32\u0e04\u0e35','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e41\u0e1d\u0e01','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e41\u0e21\u0e21',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e22\u0e32\u0e07\u0e2b\u0e49\u0e32','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e22\u0e32\u0e07\u0e2b\u0e49\u0e32 \u0e2a\u0e32\u0e02\u0e32\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e14\u0e48\u0e19\u0e2e\u0e48\u0e2d\u0e21#\u0e23\u0e23.\u0e2a\u0e32\u0e02\u0e32 .',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e22\u0e48\u0e2d\u0e22(\u0e40\u0e08\u0e35\u0e22\u0e23-\u0e2a\u0e21\u0e28\u0e23\u0e35  \u0e27\u0e31\u0e07\u0e17\u0e2d\u0e07\u0e04\u0e33)','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e40\u0e25\u0e32','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e41\u0e27','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e2a\u0e32',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e41\u0e2a\u0e30','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e40\u0e2b\u0e35\u0e22\u0e30','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e42\u0e15\u0e4b\u0e4b \u0e2a\u0e32\u0e02\u0e32\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e49\u0e27\u0e22\u0e40\u0e15\u0e48\u0e32#\u0e23\u0e23.\u0e2a\u0e32\u0e02\u0e32 .',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e25\u0e32\u0e19\u0e04\u0e33','\u0e1a\u0e49\u0e32\u0e19\u0e41\u0e21\u0e48\u0e25\u0e32\u0e19\u0e04\u0e33 \u0e2a\u0e32\u0e02\u0e32\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e48\u0e32\u0e04\u0e32\u0e19\u0e2d\u0e01#\u0e23\u0e23.\u0e2a\u0e32\u0e02\u0e32 .',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e21\u0e37\u0e2d\u0e07\u0e01\u0e4a\u0e30','\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e21\u0e37\u0e2d\u0e07\u0e01\u0e37\u0e49\u0e14','\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e21\u0e37\u0e2d\u0e07\u0e02\u0e2d\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e23\u0e48\u0e21\u0e2b\u0e25\u0e27\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e23\u0e34\u0e21\u0e43\u0e15\u0e49',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e31\u0e19\u0e01\u0e25\u0e32\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e31\u0e19\u0e04\u0e30\u0e22\u0e2d\u0e21','\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e31\u0e19\u0e1b\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e31\u0e19\u0e1e\u0e23\u0e30\u0e40\u0e19\u0e15\u0e23','\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e31\u0e19\u0e28\u0e23\u0e35',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e2a\u0e30\u0e25\u0e27\u0e07\u0e19\u0e2d\u0e01','\u0e1a\u0e49\u0e32\u0e19\u0e28\u0e23\u0e35\u0e07\u0e32\u0e21','\u0e1a\u0e49\u0e32\u0e19\u0e28\u0e23\u0e35\u0e1a\u0e38\u0e0d\u0e40\u0e23\u0e37\u0e2d\u0e07',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e25\u0e31\u0e01\u0e1b\u0e31\u0e19','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e25\u0e27\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e19\u0e2d\u0e07\u0e44\u0e04\u0e23\u0e49','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e19\u0e2d\u0e07\u0e1b\u0e25\u0e32\u0e21\u0e31\u0e19',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e19\u0e2d\u0e07\u0e1b\u0e34\u0e14','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e19\u0e2d\u0e07\u0e21\u0e30\u0e08\u0e31\u0e1a','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e19\u0e2d\u0e07\u0e2b\u0e32\u0e23 (\u0e17\u0e34\u0e1e\u0e27\u0e31\u0e19\u0e2d\u0e38\u0e17\u0e34\u0e28)','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e31\u0e27\u0e1d\u0e32\u0e22',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e49\u0e27\u0e22\u0e1a\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e49\u0e27\u0e22\u0e40\u0e01\u0e35\u0e4b\u0e22\u0e07','\u0e1a\u0e49\u0e32\u0e19\u0e2b\u0e49\u0e27\u0e22\u0e19\u0e49\u0e33\u0e08\u0e32\u0e07',
+  '\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e08\u0e14\u0e35\u0e22\u0e4c\u0e41\u0e21\u0e48\u0e04\u0e23\u0e31\u0e27','\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e1b\u0e49\u0e32\u0e27\u0e34\u0e17\u0e22\u0e32\u0e04\u0e32\u0e23',
+  '\u0e1b\u0e23\u0e30\u0e0a\u0e32\u0e2a\u0e32\u0e21\u0e31\u0e04\u0e04\u0e35\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e1b\u0e23\u0e30\u0e14\u0e39\u0e48\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e1b\u0e48\u0e32\u0e41\u0e1b\u0e4b\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e1b\u0e48\u0e32\u0e08\u0e35\u0e49\u0e27\u0e31\u0e07\u0e41\u0e14\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e1e\u0e23\u0e49\u0e32\u0e27\u0e1a\u0e39\u0e23\u0e1e\u0e32',
+  '\u0e21\u0e39\u0e25\u0e19\u0e34\u0e18\u0e34\u0e21\u0e2b\u0e32\u0e23\u0e32\u0e0a 5','\u0e23\u0e48\u0e33\u0e40\u0e1b\u0e34\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e23\u0e31\u0e1b\u0e1b\u0e32\u0e1b\u0e2d\u0e23\u0e4c\u0e15 (\u0e15\u0e0a\u0e14.\u0e1a\u0e33\u0e23\u0e38\u0e07\u0e17\u0e35\u0e48 92)',
+  '\u0e27\u0e31\u0e14\u0e07\u0e34\u0e49\u0e27\u0e40\u0e12\u0e48\u0e32','\u0e27\u0e31\u0e14\u0e17\u0e23\u0e32\u0e22\u0e21\u0e39\u0e25','\u0e27\u0e31\u0e14\u0e17\u0e38\u0e48\u0e07\u0e2b\u0e25\u0e27\u0e07','\u0e27\u0e31\u0e14\u0e17\u0e48\u0e32\u0e02\u0e49\u0e32\u0e21','\u0e27\u0e31\u0e14\u0e19\u0e32\u0e40\u0e21\u0e47\u0e07',
+  '\u0e27\u0e31\u0e14\u0e1a\u0e49\u0e32\u0e19\u0e40\u0e2b\u0e25\u0e48\u0e32','\u0e27\u0e31\u0e14\u0e1a\u0e49\u0e32\u0e19\u0e1b\u0e49\u0e2d\u0e01','\u0e27\u0e31\u0e14\u0e1b\u0e32\u0e07\u0e40\u0e15\u0e34\u0e21',
+  '\u0e27\u0e31\u0e14\u0e1b\u0e32\u0e07\u0e40\u0e15\u0e34\u0e21\u0e2a\u0e32\u0e02\u0e32\u0e1a\u0e49\u0e32\u0e19\u0e02\u0e38\u0e19\u0e2a\u0e32\u0e1a#\u0e23\u0e23.\u0e2a\u0e32\u0e02\u0e32 .','\u0e27\u0e31\u0e14\u0e1b\u0e32\u0e07\u0e21\u0e30\u0e01\u0e25\u0e49\u0e27\u0e22','\u0e27\u0e31\u0e14\u0e22\u0e31\u0e49\u0e07\u0e40\u0e21\u0e34\u0e19',
+  '\u0e27\u0e31\u0e14\u0e41\u0e21\u0e48\u0e01\u0e30','\u0e27\u0e31\u0e14\u0e41\u0e21\u0e48\u0e41\u0e01\u0e49\u0e14\u0e19\u0e49\u0e2d\u0e22','\u0e27\u0e31\u0e14\u0e41\u0e21\u0e48\u0e40\u0e25\u0e22','\u0e27\u0e31\u0e14\u0e42\u0e1b\u0e48\u0e07\u0e41\u0e22\u0e07\u0e40\u0e09\u0e25\u0e34\u0e21\u0e1e\u0e23\u0e30\u0e40\u0e01\u0e35\u0e22\u0e23\u0e15\u0e34',
+  '\u0e27\u0e31\u0e14\u0e2a\u0e31\u0e19\u0e04\u0e30\u0e22\u0e2d\u0e21','\u0e27\u0e31\u0e14\u0e2a\u0e31\u0e19\u0e17\u0e23\u0e32\u0e22\u0e21\u0e39\u0e25(\u0e21\u0e07\u0e04\u0e25\u0e27\u0e34\u0e17\u0e22\u0e32)','\u0e27\u0e31\u0e14\u0e2b\u0e19\u0e2d\u0e07\u0e2d\u0e2d\u0e19','\u0e27\u0e31\u0e14\u0e2b\u0e49\u0e27\u0e22\u0e44\u0e23\u0e48',
+  '\u0e2a\u0e1a\u0e40\u0e1b\u0e34\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32','\u0e2a\u0e2b\u0e01\u0e23\u0e13\u0e4c\u0e14\u0e33\u0e23\u0e34','\u0e2a\u0e31\u0e19\u0e17\u0e23\u0e32\u0e22\u0e2b\u0e25\u0e27\u0e07','\u0e2a\u0e31\u0e19\u0e1b\u0e48\u0e32\u0e2a\u0e31\u0e01\u0e27\u0e34\u0e17\u0e22\u0e32',
+  '\u0e2a\u0e31\u0e19\u0e1b\u0e48\u0e32\u0e22\u0e32\u0e07\u0e27\u0e34\u0e17\u0e22\u0e32\u0e04\u0e32\u0e23','\u0e2a\u0e31\u0e19\u0e21\u0e2b\u0e32\u0e1e\u0e19\u0e27\u0e34\u0e17\u0e22\u0e32'
 ].filter(function(v,i,a){return a.indexOf(v)===i;})
  .sort(function(a,b){return a.localeCompare(b,'th');});
 
+// เติม dropdown โรงเรียน
 ['fil-school','up-school'].forEach(function(id){
-  var sel=document.getElementById(id);
-  SCHOOL_LIST.forEach(function(s){var o=document.createElement('option');o.value=o.textContent=s;sel.appendChild(o);});
+  var sel = document.getElementById(id);
+  SCHOOL_LIST.forEach(function(s){
+    var o = document.createElement('option');
+    o.value = o.textContent = s;
+    sel.appendChild(o);
+  });
 });
 
-var allData=[], filtered=[], currentPage=1, PAGE_SIZE=25;
-var chartSubj=null, chartRank=null, chartSchool=null;
-var COLORS=['#1a65c5','#f59e0b','#7bd6f9','#e879a8','#22c55e',
-            '#8b5cf6','#f97316','#0ea5e9','#84cc16','#6366f1','#14b8a6'];
-
-function setStatus(msg,state){
-  document.getElementById('status-txt').textContent=msg;
-  document.getElementById('dot').className='dot '+(state||'');
+/* =========================================================
+   Tab switching
+   ========================================================= */
+function switchTab(tab){
+  document.querySelectorAll('.nav-tab').forEach(function(t,i){
+    t.classList.toggle('active', ['dashboard','tracking','upload'][i] === tab);
+  });
+  ['dashboard','tracking','upload'].forEach(function(name){
+    document.getElementById('page-'+name).classList.toggle('active', name === tab);
+  });
+  if(tab === 'tracking') renderTracking();
 }
 
-// ดึงข้อมูลจาก Apps Script ด้วย JSONP
-// JSONP คือการสร้าง <script> tag แบบ dynamic ซึ่งไม่ถูกบล็อกโดย CORS
-// Apps Script จะตอบกลับในรูปแบบ: cb_1234({"status":"success","data":[...]})
+/* =========================================================
+   State
+   ========================================================= */
+var allData = [], filtered = [], currentPage = 1, PAGE_SIZE = 25;
+var chartSubj = null, chartRank = null, chartSchool = null;
+var COLORS = ['#1a65c5','#f59e0b','#7bd6f9','#e879a8','#22c55e',
+              '#8b5cf6','#f97316','#0ea5e9','#84cc16','#6366f1','#14b8a6'];
+
+/* =========================================================
+   Status bar
+   ========================================================= */
+function setStatus(msg, state){
+  document.getElementById('status-txt').textContent = msg;
+  document.getElementById('dot').className = 'dot ' + (state || '');
+}
+
+/* =========================================================
+   fetchData — JSONP
+   ========================================================= */
 function fetchData(){
-  setStatus('กำลังดึงข้อมูลจาก Google Sheet...','spin');
-  var cb='cb_'+Date.now();
-  var script=document.createElement('script');
-  script.src=buildURL('read','&callback='+cb);
+  setStatus('กำลังดึงข้อมูลจาก Google Sheet...', 'spin');
+  var cb = 'cb_' + Date.now();
+  var script = document.createElement('script');
+  script.src = SCRIPT_URL + '?action=read&_t=' + Date.now() + '&callback=' + cb;
 
-  // timeout 15 วินาที ถ้า server ไม่ตอบกลับ
-  var t=setTimeout(function(){
-    setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง','err');
-    try{document.head.removeChild(script);delete window[cb];}catch(e){}
-  },15000);
+  var timer = setTimeout(function(){
+    setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง', 'err');
+    try{ document.head.removeChild(script); delete window[cb]; }catch(e){}
+  }, 15000);
 
-  window[cb]=function(res){
-    clearTimeout(t);
-    try{document.head.removeChild(script);}catch(e){}
+  window[cb] = function(res){
+    clearTimeout(timer);
+    try{ document.head.removeChild(script); }catch(e){}
     delete window[cb];
-    if(res.status==='success'){
-      allData=res.data||[];
+    if(res.status === 'success'){
+      allData = res.data || [];
       populateFilters();
       applyFilter();
       updateStats();
       ['stats','toolbar','charts-section','table-section'].forEach(function(id){
-        var el=document.getElementById(id);
-        if(el) el.style.display=id==='stats'?'grid':id==='toolbar'?'flex':'block';
+        var el = document.getElementById(id);
+        if(el) el.style.display = id === 'stats' ? 'grid' : id === 'toolbar' ? 'flex' : 'block';
       });
-      document.getElementById('pagination').style.display='flex';
-      setStatus('โหลดสำเร็จ — '+allData.length+' รายการ (อัปเดต: '+
-        new Date().toLocaleTimeString('th-TH')+')','ok');
+      document.getElementById('pagination').style.display = 'flex';
+      setStatus('โหลดสำเร็จ — ' + allData.length + ' รายการ (อัปเดต: ' +
+        new Date().toLocaleTimeString('th-TH') + ')', 'ok');
     } else {
-      setStatus('เกิดข้อผิดพลาด: '+(res.message||'ไม่ทราบสาเหตุ'),'err');
+      setStatus('เกิดข้อผิดพลาด: ' + (res.message || 'ไม่ทราบสาเหตุ'), 'err');
     }
   };
 
-  script.onerror=function(){
-    clearTimeout(t);
-    setStatus('เชื่อมต่อไม่ได้ — ตรวจสอบว่า Apps Script Deploy แล้ว','err');
-    try{document.head.removeChild(script);delete window[cb];}catch(e){}
+  script.onerror = function(){
+    clearTimeout(timer);
+    setStatus('เชื่อมต่อไม่ได้ — ตรวจสอบ Apps Script', 'err');
+    try{ document.head.removeChild(script); delete window[cb]; }catch(e){}
   };
 
   document.head.appendChild(script);
 }
 
+/* =========================================================
+   Filters & Stats
+   ========================================================= */
 function populateFilters(){
-  var s=[...new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean))]
-    .sort(function(a,b){return a.localeCompare(b,'th');});
-  document.getElementById('fil-subj').innerHTML=
-    '<option value="">กลุ่มสาระทั้งหมด</option>'+
-    s.map(function(x){return'<option value="'+x+'">'+x+'</option>';}).join('');
+  var subjects = [];
+  allData.forEach(function(r){
+    var s = r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49'];
+    if(s && subjects.indexOf(s) === -1) subjects.push(s);
+  });
+  subjects.sort(function(a,b){ return a.localeCompare(b,'th'); });
+  document.getElementById('fil-subj').innerHTML =
+    '<option value="">\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e17\u0e31\u0e49\u0e07\u0e2b\u0e21\u0e14</option>' +
+    subjects.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
 }
 
 function applyFilter(){
-  var q=(document.getElementById('search').value||'').toLowerCase();
-  var sc=document.getElementById('fil-school').value;
-  var su=document.getElementById('fil-subj').value;
-  var pl=document.getElementById('fil-plan').value;
-  filtered=allData.filter(function(r){
-    return(!q||Object.values(r).some(function(v){return String(v).toLowerCase().includes(q);}))&&
-      (!sc||r['โรงเรียน']===sc)&&(!su||r['กลุ่มสาระการเรียนรู้']===su)&&
-      (!pl||(pl==='yes'?!!(r['ลิ้งก์แผนการสอน']||'').trim():!(r['ลิ้งก์แผนการสอน']||'').trim()));
+  var q  = (document.getElementById('search').value || '').toLowerCase();
+  var sc = document.getElementById('fil-school').value;
+  var su = document.getElementById('fil-subj').value;
+  var pl = document.getElementById('fil-plan').value;
+  filtered = allData.filter(function(r){
+    var mQ = !q  || Object.values(r).some(function(v){ return String(v).toLowerCase().indexOf(q) !== -1; });
+    var mC = !sc || r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19'] === sc;
+    var mS = !su || r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49'] === su;
+    var hasLink = !!( r['\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19'] || '' ).trim();
+    var mP = !pl || (pl === 'yes' ? hasLink : !hasLink);
+    return mQ && mC && mS && mP;
   });
-  currentPage=1;
+  currentPage = 1;
   renderTable();
   renderCharts();
-  var c=document.getElementById('filtered-count');
-  if(c) c.textContent=filtered.length+' รายการ';
+  var c = document.getElementById('filtered-count');
+  if(c) c.textContent = filtered.length + ' \u0e23\u0e32\u0e22\u0e01\u0e32\u0e23';
 }
 
 function updateStats(){
-  document.getElementById('s-total').textContent=allData.length.toLocaleString();
-  document.getElementById('s-schools').textContent=
-    new Set(allData.map(function(r){return r['โรงเรียน'];}).filter(Boolean)).size;
-  document.getElementById('s-subjects').textContent=
-    new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean)).size;
-  document.getElementById('s-uploaded').textContent=
-    allData.filter(function(r){return!!(r['ลิ้งก์แผนการสอน']||'').trim();}).length;
+  document.getElementById('s-total').textContent = allData.length.toLocaleString();
+  var schools = {}, subjects = {};
+  allData.forEach(function(r){
+    if(r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19'])  schools[r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19']] = 1;
+    if(r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']) subjects[r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']] = 1;
+  });
+  document.getElementById('s-schools').textContent  = Object.keys(schools).length;
+  document.getElementById('s-subjects').textContent = Object.keys(subjects).length;
+  document.getElementById('s-uploaded').textContent = allData.filter(function(r){
+    return !!( r['\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19'] || '' ).trim();
+  }).length;
 }
 
-function cnt(data,key){
-  var m={};
-  data.forEach(function(r){var v=r[key]||'(ไม่ระบุ)';m[v]=(m[v]||0)+1;});
-  return Object.entries(m).map(function(e){return{label:e[0],value:e[1]};})
-    .sort(function(a,b){return b.value-a.value;});
+/* =========================================================
+   Charts
+   ========================================================= */
+function cntMap(data, key){
+  var m = {};
+  data.forEach(function(r){ var v = r[key] || '(?)'; m[v] = (m[v]||0) + 1; });
+  return Object.keys(m).map(function(k){ return {label:k, value:m[k]}; })
+               .sort(function(a,b){ return b.value - a.value; });
 }
 
 function renderCharts(){
-  var sd=cnt(filtered,'กลุ่มสาระการเรียนรู้');
+  var sd = cntMap(filtered, '\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49');
   if(chartSubj) chartSubj.destroy();
-  chartSubj=new Chart(document.getElementById('chart-subj'),{type:'bar',
-    data:{labels:sd.map(function(d){return d.label;}),datasets:[{
-      data:sd.map(function(d){return d.value;}),
-      backgroundColor:sd.map(function(_,i){return COLORS[i%COLORS.length]+'bb';}),
-      borderColor:sd.map(function(_,i){return COLORS[i%COLORS.length];}),
-      borderWidth:1.5,borderRadius:10,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:function(c){return' '+c.raw+' คน ('+Math.round(c.raw/(filtered.length||1)*100)+'%)';}}}},
-      scales:{x:{grid:{display:false},ticks:{font:{family:'Sarabun',size:12}}},
-              y:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
-                 grid:{color:'rgba(26,101,197,.07)'},border:{display:false}}}}});
+  chartSubj = new Chart(document.getElementById('chart-subj'),{
+    type:'bar',
+    data:{labels:sd.map(function(d){return d.label;}),
+      datasets:[{data:sd.map(function(d){return d.value;}),
+        backgroundColor:sd.map(function(_,i){return COLORS[i%COLORS.length]+'bb';}),
+        borderColor:sd.map(function(_,i){return COLORS[i%COLORS.length];}),
+        borderWidth:1.5, borderRadius:10, borderSkipped:false}]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){
+        return ' ' + c.raw + ' \u0e04\u0e19 (' + Math.round(c.raw/(filtered.length||1)*100) + '%)';
+      }}}},
+      scales:{x:{grid:{display:false}, ticks:{font:{family:'Sarabun',size:12}}},
+              y:{beginAtZero:true, ticks:{precision:0, font:{family:'Sarabun'}},
+                 grid:{color:'rgba(26,101,197,.07)'}, border:{display:false}}}}
+  });
 
-  var rd=cnt(filtered,'วิทยฐานะ');
+  var rd = cntMap(filtered, '\u0e27\u0e34\u0e17\u0e22\u0e10\u0e32\u0e19\u0e30');
   if(chartRank) chartRank.destroy();
-  chartRank=new Chart(document.getElementById('chart-rank'),{type:'doughnut',
-    data:{labels:rd.map(function(d){return d.label;}),datasets:[{
-      data:rd.map(function(d){return d.value;}),
-      backgroundColor:rd.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
-      borderColor:'#fff',borderWidth:3,hoverOffset:10}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
-      plugins:{legend:{position:'bottom',labels:{font:{family:'Sarabun',size:12},
-        padding:14,boxWidth:12,usePointStyle:true}},
-        tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.raw+' คน';}}}}}});
+  chartRank = new Chart(document.getElementById('chart-rank'),{
+    type:'doughnut',
+    data:{labels:rd.map(function(d){return d.label;}),
+      datasets:[{data:rd.map(function(d){return d.value;}),
+        backgroundColor:rd.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
+        borderColor:'#fff', borderWidth:3, hoverOffset:10}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Sarabun',size:12},
+        padding:14, boxWidth:12, usePointStyle:true}},
+        tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' \u0e04\u0e19';}}}}}
+  });
 
-  var td=cnt(filtered,'โรงเรียน').slice(0,10);
+  var td = cntMap(filtered, '\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19').slice(0,10);
   if(chartSchool) chartSchool.destroy();
-  chartSchool=new Chart(document.getElementById('chart-school'),{type:'bar',
-    data:{labels:td.map(function(d){return d.label;}),datasets:[{
-      data:td.map(function(d){return d.value;}),
-      backgroundColor:'#7bd6f9bb',borderColor:'#5aa8e8',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน';}}}},
-      scales:{x:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
-                 grid:{color:'rgba(26,101,197,.07)'},border:{display:false}},
-              y:{grid:{display:false},ticks:{font:{family:'Sarabun',size:11},
-                callback:function(v){var l=td[v]?td[v].label:'';
-                  return l.length>14?l.substring(0,14)+'…':l;}}}}}});
+  chartSchool = new Chart(document.getElementById('chart-school'),{
+    type:'bar',
+    data:{labels:td.map(function(d){return d.label;}),
+      datasets:[{data:td.map(function(d){return d.value;}),
+        backgroundColor:'#7bd6f9bb', borderColor:'#5aa8e8',
+        borderWidth:1.5, borderRadius:8, borderSkipped:false}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){return ' '+c.raw+' \u0e04\u0e19';}}}},
+      scales:{x:{beginAtZero:true, ticks:{precision:0, font:{family:'Sarabun'}},
+                 grid:{color:'rgba(26,101,197,.07)'}, border:{display:false}},
+              y:{grid:{display:false}, ticks:{font:{family:'Sarabun',size:11},
+                callback:function(v){
+                  var l = td[v] ? td[v].label : '';
+                  return l.length > 14 ? l.substring(0,14) + '...' : l;
+                }}}}}
+  });
 }
 
+/* =========================================================
+   Table
+   ========================================================= */
 function renderTable(){
-  var start=(currentPage-1)*PAGE_SIZE;
-  var page=filtered.slice(start,start+PAGE_SIZE);
-  var total=Math.ceil(filtered.length/PAGE_SIZE);
+  var start = (currentPage-1) * PAGE_SIZE;
+  var page  = filtered.slice(start, start + PAGE_SIZE);
+  var total = Math.ceil(filtered.length / PAGE_SIZE);
+
   if(!page.length){
-    document.getElementById('tbody').innerHTML=
-      '<tr><td colspan="7" class="empty"><span class="empty-icon"></span>ไม่พบข้อมูล</td></tr>';
-    document.getElementById('page-info').textContent=''; return;
+    document.getElementById('tbody').innerHTML =
+      '<tr><td colspan="7" class="empty"><span class="empty-icon"></span>\u0e44\u0e21\u0e48\u0e1e\u0e1a\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25</td></tr>';
+    document.getElementById('page-info').textContent = '';
+    return;
   }
-  document.getElementById('tbody').innerHTML=page.map(function(r,i){
-    var lk=(r['ลิ้งก์แผนการสอน']||'').trim();
-    var pc=lk?'<a href="'+lk+'" target="_blank" rel="noopener noreferrer" '+
-      'class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">ดูกิจกรรมการเรียนรู้</a>':'';
-    return'<tr><td class="num">'+(start+i+1)+'</td>'+
-      '<td><span class="badge b-school">'+(r['โรงเรียน']||'—')+'</span></td>'+
-      '<td style="font-weight:600">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
-      '<td><span class="badge b-rank">'+(r['วิทยฐานะ']||'—')+'</span></td>'+
-      '<td><span class="badge b-subj">'+(r['กลุ่มสาระการเรียนรู้']||'—')+'</span></td>'+
-      '<td>'+(r['ระดับชั้นที่สอน']||'—')+'</td>'+
-      '<td>'+pc+'</td></tr>';
+
+  document.getElementById('tbody').innerHTML = page.map(function(r,i){
+    var lk = (r['\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19'] || '').trim();
+    var pc = lk
+      ? '<a href="' + lk + '" target="_blank" rel="noopener" class="link-file">\u0e14\u0e39\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49</a>'
+      : '';
+    return '<tr>' +
+      '<td class="num">' + (start+i+1) + '</td>' +
+      '<td><span class="badge b-school">' + (r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19']||'&mdash;') + '</span></td>' +
+      '<td style="font-weight:600">' + (r['\u0e0a\u0e37\u0e48\u0e2d-\u0e19\u0e32\u0e21\u0e2a\u0e01\u0e38\u0e25']||'&mdash;') + '</td>' +
+      '<td><span class="badge b-rank">' + (r['\u0e27\u0e34\u0e17\u0e22\u0e10\u0e32\u0e19\u0e30']||'&mdash;') + '</span></td>' +
+      '<td><span class="badge b-subj">' + (r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']||'&mdash;') + '</span></td>' +
+      '<td>' + (r['\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e19']||'&mdash;') + '</td>' +
+      '<td>' + pc + '</td>' +
+      '</tr>';
   }).join('');
-  document.getElementById('page-info').textContent=
-    'หน้า '+currentPage+'/'+total+' · '+(start+1)+'–'+
-    Math.min(start+PAGE_SIZE,filtered.length)+' จาก '+filtered.length+' รายการ';
-  document.getElementById('btn-prev').disabled=currentPage<=1;
-  document.getElementById('btn-next').disabled=currentPage>=total;
+
+  document.getElementById('page-info').textContent =
+    '\u0e2b\u0e19\u0e49\u0e32 ' + currentPage + '/' + total +
+    ' \u00b7 ' + (start+1) + '\u2013' + Math.min(start+PAGE_SIZE, filtered.length) +
+    ' \u0e08\u0e32\u0e01 ' + filtered.length + ' \u0e23\u0e32\u0e22\u0e01\u0e32\u0e23';
+  document.getElementById('btn-prev').disabled = currentPage <= 1;
+  document.getElementById('btn-next').disabled = currentPage >= total;
 }
 
 function changePage(dir){
-  var total=Math.ceil(filtered.length/PAGE_SIZE);
-  currentPage=Math.max(1,Math.min(total,currentPage+dir));
+  var total = Math.ceil(filtered.length / PAGE_SIZE);
+  currentPage = Math.max(1, Math.min(total, currentPage + dir));
   renderTable();
 }
 
 function exportCSV(){
-  var h=['โรงเรียน','ชื่อ-นามสกุล','วิทยฐานะ','กลุ่มสาระการเรียนรู้',
-         'ระดับชั้นที่สอน','ลิ้งก์แผนการสอน'];
-  var rows=filtered.map(function(r){
-    return h.map(function(k){return'"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(',');
+  var h = ['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19','\u0e0a\u0e37\u0e48\u0e2d-\u0e19\u0e32\u0e21\u0e2a\u0e01\u0e38\u0e25','\u0e27\u0e34\u0e17\u0e22\u0e10\u0e32\u0e19\u0e30',
+             '\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49','\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e19','\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19'];
+  var rows = filtered.map(function(r){
+    return h.map(function(k){ return '"' + (r[k]||'').toString().replace(/"/g,'""') + '"'; }).join(',');
   });
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(
-    ['﻿'+h.join(',')+'
-'+rows.join('
-')],{type:'text/csv;charset=utf-8;'}));
-  a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF' + h.join(',') + '\n' + rows.join('\n')],
+    {type:'text/csv;charset=utf-8;'}));
+  a.download = 'PISA_' + new Date().toLocaleDateString('th-TH').replace(/\//g,'-') + '.csv';
   a.click();
 }
 
-function switchTab(tab){
-  document.querySelectorAll('.nav-tab').forEach(function(t,i){
-    t.classList.toggle('active',['dashboard','tracking','upload'][i]===tab);
-  });
-  document.getElementById('page-dashboard').classList.toggle('active',tab==='dashboard');
-  document.getElementById('page-tracking').classList.toggle('active',tab==='tracking');
-  document.getElementById('page-upload').classList.toggle('active',tab==='upload');
-  // เมื่อเปิดหน้าติดตาม ให้วาดข้อมูลทันที
-  if(tab==='tracking') renderTracking();
-}
-
-// ===== ฟังก์ชันหน้าติดตาม =====
-// เปรียบเทียบ SCHOOL_LIST (รายชื่อโรงเรียนทั้งหมด) กับ allData (ข้อมูลจาก Sheet)
-// แบ่งเป็น 3 กลุ่ม: ไม่มีครูเลย / มีครูแต่ไม่ส่งแผน / ครบถ้วน
+/* =========================================================
+   Tracking page
+   ========================================================= */
 function renderTracking(){
-  var totalSchools = SCHOOL_LIST.length;
-
-  // สร้าง map: ชื่อโรงเรียน → {teachers: [], hasAnyPlan: bool}
+  var total = SCHOOL_LIST.length;
   var schoolMap = {};
   SCHOOL_LIST.forEach(function(s){ schoolMap[s] = {teachers:[], hasAnyPlan:false}; });
-
-  // วนข้อมูลครูทั้งหมดจาก Sheet
   allData.forEach(function(r){
-    var sc = (r['โรงเรียน']||''). trim();
-    if(!schoolMap[sc]) schoolMap[sc] = {teachers:[], hasAnyPlan:false}; // โรงเรียนนอก list
+    var sc = (r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19']||'').trim();
+    if(!schoolMap[sc]) schoolMap[sc] = {teachers:[], hasAnyPlan:false};
     schoolMap[sc].teachers.push(r);
-    if((r['ลิ้งก์แผนการสอน']||''). trim()) schoolMap[sc].hasAnyPlan = true;
+    if((r['\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e2a\u0e2d\u0e19']||'').trim()) schoolMap[sc].hasAnyPlan = true;
   });
 
-  // แบ่งกลุ่ม
-  var noTeacher = [];   // ยังไม่มีครูลงทะเบียนเลย
-  var noPlan    = [];   // มีครูแต่ยังไม่มีแผนแม้แต่คนเดียว
-  var complete  = [];   // มีครูและมีแผนอย่างน้อย 1 คน
+  var PISA_SUBJ  = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  var PISA_GRADE = ['\u0e1b.4','\u0e1b.5','\u0e1b.6'];
 
-  SCHOOL_LIST.forEach(function(s){
-    var info = schoolMap[s];
-    if(info.teachers.length === 0)       noTeacher.push(s);
-    else if(!info.hasAnyPlan)            noPlan.push({name:s, count:info.teachers.length});
-    else                                 complete.push({name:s, count:info.teachers.length});
-  });
-
-  // --- อัปเดต progress bars ---
-  var registeredSchools = totalSchools - noTeacher.length;
-  var pctReg = Math.round(registeredSchools / totalSchools * 100);
-  document.getElementById('prog-registered').style.width = pctReg + '%';
-  document.getElementById('prog-registered-txt').textContent = registeredSchools + '/' + totalSchools;
-
-  var pctPlan = Math.round(complete.length / totalSchools * 100);
-  document.getElementById('prog-plans').style.width = pctPlan + '%';
-  document.getElementById('prog-plans-txt').textContent = complete.length + '/' + totalSchools;
-
-  // --- จำนวนหัวข้อแต่ละกลุ่ม ---
-  document.getElementById('cnt-no-teacher').textContent = noTeacher.length + ' แห่ง';
-  document.getElementById('cnt-no-plan').textContent    = noPlan.length    + ' แห่ง';
-  document.getElementById('cnt-complete').textContent   = complete.length  + ' แห่ง';
-
-  // ─────────────────────────────────────────────────────────────
-  //  กลุ่มที่ 1: โรงเรียนที่รายชื่อครู "ยังไม่ครบ"
-  //  หมายความว่า: ยังขาดครูในบาง "วิชา × ระดับชั้น" ที่ต้องครอบคลุม
-  //  3 วิชา PISA: ภาษาไทย, วิทยาศาสตร์และเทคโนโลยี, คณิตศาสตร์
-  //  3 ระดับชั้น: ป.4, ป.5, ป.6
-  //  รวม 9 ช่องต่อโรงเรียน — ถ้าขาดแม้แต่ช่องเดียว จัดเป็น "ยังไม่ครบ"
-  // ─────────────────────────────────────────────────────────────
-  var PISA_SUBJECTS = ['ภาษาไทย','วิทยาศาสตร์และเทคโนโลยี','คณิตศาสตร์'];
-  var PISA_GRADES   = ['ป.4','ป.5','ป.6'];
-
-  // สร้าง map: school → Set ของ "วิชา|ระดับชั้น" ที่มีครูแล้ว
-  var coverageMap = {};
-  SCHOOL_LIST.forEach(function(s){ coverageMap[s] = new Set(); });
+  var coverMap = {};
+  SCHOOL_LIST.forEach(function(s){ coverMap[s] = {}; });
   allData.forEach(function(r){
-    var sc    = (r['โรงเรียน']||'').trim();
-    var subj  = (r['กลุ่มสาระการเรียนรู้']||'').trim();
-    var grade = (r['ระดับชั้นที่สอน']||'').trim();
-    if(!coverageMap[sc]) coverageMap[sc] = new Set();
-    // ระดับชั้นที่สอนอาจเป็น "ป.4, ป.5, ป.6" หรือ "ป.4-ป.6" ก็ได้
-    // ตรวจทุก grade ว่าปรากฏใน string นั้นไหม
-    PISA_GRADES.forEach(function(g){
-      if(grade.indexOf(g) !== -1) coverageMap[sc].add(subj+'|'+g);
+    var sc    = (r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19']||'').trim();
+    var subj  = (r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']||'').trim();
+    var grade = (r['\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e19']||'').trim();
+    if(!coverMap[sc]) coverMap[sc] = {};
+    PISA_GRADE.forEach(function(g){
+      if(grade.indexOf(g) !== -1) coverMap[sc][subj+'|'+g] = true;
     });
   });
 
-  // แยกโรงเรียน: ครบ 9 ช่อง = noTeacher (แต่ความจริงคือ "ครบ PISA")
-  // ไม่ครบ = แสดงรายการที่ขาด พร้อม modal เมื่อคลิก
-  var incomplete = []; // {name, missing: [{subj,grade},...], have: count}
-  var noRegister = []; // ยังไม่มีข้อมูลเลยแม้แต่คนเดียว
-
+  var noData = [], incomplete = [], noPlan = [], complete = [];
   SCHOOL_LIST.forEach(function(s){
     var info = schoolMap[s];
-    if(info.teachers.length === 0){
-      noRegister.push(s);
-      return;
-    }
-    // หา combination ที่ขาด
+    if(info.teachers.length === 0){ noData.push(s); return; }
     var missing = [];
-    PISA_SUBJECTS.forEach(function(subj){
-      PISA_GRADES.forEach(function(grade){
-        if(!coverageMap[s].has(subj+'|'+grade)) missing.push({subj:subj, grade:grade});
+    PISA_SUBJ.forEach(function(su){
+      PISA_GRADE.forEach(function(gr){
+        if(!coverMap[s][su+'|'+gr]) missing.push({subj:su, grade:gr});
       });
     });
-    if(missing.length > 0) incomplete.push({name:s, missing:missing, have:info.teachers.length});
+    if(missing.length > 0)   incomplete.push({name:s, missing:missing, count:info.teachers.length});
+    else if(!info.hasAnyPlan) noPlan.push({name:s, count:info.teachers.length});
+    else                      complete.push({name:s, count:info.teachers.length});
   });
 
-  // รวม noRegister + incomplete เป็น "ยังไม่ครบ"
-  var notComplete = noRegister.map(function(s){ return {name:s, missing:[], have:0, noData:true}; })
+  var notComplete = noData.map(function(s){ return {name:s, missing:[], count:0, noData:true}; })
     .concat(incomplete);
 
-  document.getElementById('cnt-no-teacher').textContent = notComplete.length + ' แห่ง';
+  // Progress bars
+  var regPct  = Math.round((total - noData.length) / total * 100);
+  var planPct = Math.round(complete.length / total * 100);
+  document.getElementById('prog-registered').style.width = regPct + '%';
+  document.getElementById('prog-registered-txt').textContent = (total-noData.length) + '/' + total;
+  document.getElementById('prog-plans').style.width = planPct + '%';
+  document.getElementById('prog-plans-txt').textContent = complete.length + '/' + total;
 
-  if(notComplete.length === 0){
-    document.getElementById('list-no-teacher').innerHTML =
-      '<div class="track-item" style="justify-content:center;color:#14532d">✅ ทุกโรงเรียนมีครูครบแล้ว</div>';
-  } else {
-    document.getElementById('list-no-teacher').innerHTML = notComplete.map(function(r,i){
-      var badge = r.noData
-        ? '<span class="track-item-count red">ไม่มีข้อมูล</span>'
-        : '<span class="track-item-count red">ขาด '+r.missing.length+' ช่อง</span>';
-      // สร้าง tooltip แสดงรายการที่ขาด
-      var missingStr = r.noData ? 'ยังไม่มีครูลงทะเบียนเลย'
-        : r.missing.map(function(m){ return m.grade+' '+m.subj; }).join(', ');
-      return '<div class="track-item" style="cursor:pointer" '+
-        'onclick="showMissingDetail(''+r.name.replace(/'/g,"\'")+'')" '+
-        'title="คลิกเพื่อดูรายละเอียด">'+ 
-        '<div class="track-dot red"></div>'+
-        '<div style="flex:1;min-width:0">'+
-          '<div style="font-weight:600">'+(i+1)+'. '+r.name+'</div>'+
-          (r.noData ? '' : '<div style="font-size:11px;color:#b91c1c;margin-top:1px">ขาด: '+missingStr.substring(0,60)+(missingStr.length>60?'...':'')+'</div>')+
-        '</div>'+
-        badge+
-        '</div>';
-    }).join('');
-  }
+  // Counts
+  document.getElementById('cnt-no-teacher').textContent = notComplete.length + ' \u0e41\u0e2b\u0e48\u0e07';
+  document.getElementById('cnt-no-plan').textContent    = noPlan.length    + ' \u0e41\u0e2b\u0e48\u0e07';
+  document.getElementById('cnt-complete').textContent   = complete.length  + ' \u0e41\u0e2b\u0e48\u0e07';
 
-  // เก็บข้อมูล missing ไว้ใน global สำหรับ modal
+  // List: notComplete
   window._missingData = {};
   notComplete.forEach(function(r){ window._missingData[r.name] = r; });
 
-  // ─────────────────────────────────────────────────────────────
-  //  กลุ่มที่ 2: มีครูแล้วและ PISA ครบ แต่ยังไม่มีแผนการจัดกิจกรรม
-  // ─────────────────────────────────────────────────────────────
-  document.getElementById('cnt-no-plan').textContent = noPlan.length + ' แห่ง';
+  document.getElementById('list-no-teacher').innerHTML = notComplete.length
+    ? notComplete.map(function(r,i){
+        return '<div class="track-item" style="cursor:pointer" onclick="showMissingDetail(\'' +
+          r.name.replace(/'/g,"\\'") + '\')" title="\u0e04\u0e25\u0e34\u0e01\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e14\u0e39\u0e23\u0e32\u0e22\u0e25\u0e30\u0e40\u0e2d\u0e35\u0e22\u0e14">' +
+          '<div class="track-dot red"></div>' +
+          '<div style="flex:1;min-width:0"><div style="font-weight:600">'+(i+1)+'. '+r.name+'</div>' +
+          (r.noData ? '' : '<div style="font-size:11px;color:#b91c1c">\u0e02\u0e32\u0e14 '+r.missing.length+' \u0e0a\u0e48\u0e2d\u0e07</div>') +
+          '</div>' +
+          '<span class="track-item-count red">'+(r.noData?'\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25':'\u0e02\u0e32\u0e14 '+r.missing.length+' \u0e0a\u0e48\u0e2d\u0e07')+'</span>' +
+          '</div>';
+      }).join('')
+    : '<div class="track-item" style="justify-content:center;color:#14532d">ทุกโรงเรียนครบแล้ว</div>';
+
+  // List: noPlan
   document.getElementById('list-no-plan').innerHTML = noPlan.length
     ? noPlan.map(function(r,i){
-        return '<div class="track-item">'+
-          '<div class="track-dot yellow"></div>'+
-          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>'+
-          '<span class="track-item-count yellow">'+r.count+' คน</span>'+
+        return '<div class="track-item">' +
+          '<div class="track-dot yellow"></div>' +
+          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>' +
+          '<span class="track-item-count yellow">'+r.count+' \u0e04\u0e19</span>' +
           '</div>';
       }).join('')
-    : '<div class="track-item" style="justify-content:center;color:#14532d">✅ ทุกโรงเรียนส่งแผนแล้ว</div>';
+    : '<div class="track-item" style="justify-content:center;color:#14532d">ทุกโรงเรียนส่งแผนแล้ว</div>';
 
-  // ─────────────────────────────────────────────────────────────
-  //  กลุ่มที่ 3: ครบถ้วน
-  // ─────────────────────────────────────────────────────────────
-  document.getElementById('cnt-complete').textContent = complete.length + ' แห่ง';
-  var completeEl = document.getElementById('list-complete');
-  completeEl.style.display = '';
-  completeEl.innerHTML = complete.length
+  // List: complete
+  var el = document.getElementById('list-complete');
+  el.innerHTML = complete.length
     ? complete.map(function(r,i){
-        return '<div class="track-item">'+
-          '<div class="track-dot green"></div>'+
-          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>'+
-          '<span class="track-item-count green">'+r.count+' คน</span>'+
+        return '<div class="track-item">' +
+          '<div class="track-dot green"></div>' +
+          '<div style="flex:1"><span style="font-weight:600">'+(i+1)+'. '+r.name+'</span></div>' +
+          '<span class="track-item-count green">'+r.count+' \u0e04\u0e19</span>' +
           '</div>';
       }).join('')
-    : '<div class="track-item" style="justify-content:center;color:var(--gray400)">ยังไม่มีโรงเรียนที่ครบถ้วน</div>';
+    : '<div class="track-item" style="justify-content:center;color:#94a3b8">ยังไม่มีโรงเรียนที่ครบถ้วน</div>';
 }
 
-// ─────────────────────────────────────────────────────────────
-//  Modal แสดงรายละเอียดที่ขาดเมื่อคลิกชื่อโรงเรียน
-// ─────────────────────────────────────────────────────────────
 function showMissingDetail(schoolName){
   var data = window._missingData && window._missingData[schoolName];
   if(!data) return;
+  var SUBJ  = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  var SUBJ_FULL = ['\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22','\u0e27\u0e34\u0e17\u0e22\u0e32\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c\u0e41\u0e25\u0e30\u0e40\u0e17\u0e04\u0e42\u0e19\u0e42\u0e25\u0e22\u0e35','\u0e04\u0e13\u0e34\u0e15\u0e28\u0e32\u0e2a\u0e15\u0e23\u0e4c'];
+  var GRADE = ['\u0e1b.4','\u0e1b.5','\u0e1b.6'];
+  var missingSet = {};
+  if(data.missing) data.missing.forEach(function(m){ missingSet[m.subj+'|'+m.grade] = true; });
 
-  var PISA_SUBJECTS_SHORT = ['ภาษาไทย','วิทยาศาสตร์','คณิตศาสตร์'];
-  var PISA_SUBJECTS_FULL  = ['ภาษาไทย','วิทยาศาสตร์และเทคโนโลยี','คณิตศาสตร์'];
-  var GRADES = ['ป.4','ป.5','ป.6'];
+  var body = data.noData
+    ? '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">\u26a0\ufe0f \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e23\u0e39\u0e25\u0e07\u0e17\u0e30\u0e40\u0e1a\u0e35\u0e22\u0e19\u0e40\u0e25\u0e22</div>'
+    : (function(){
+        var t = '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem">';
+        t += '<thead><tr><th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0">\u0e27\u0e34\u0e0a\u0e32</th>';
+        GRADE.forEach(function(g){ t += '<th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0;text-align:center">'+g+'</th>'; });
+        t += '</tr></thead><tbody>';
+        SUBJ_FULL.forEach(function(sf,si){
+          t += '<tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:600">'+SUBJ[si]+'</td>';
+          GRADE.forEach(function(g){
+            var missing = missingSet[sf+'|'+g];
+            t += '<td style="padding:8px;border:1px solid #e2e8f0;text-align:center;background:'+(missing?'#fff5f5':'#f0fdf4')+'">'+
+              (missing ? '<span style="color:#ef4444;font-size:18px">&#10060;</span>' : '<span style="color:#22c55e;font-size:18px">&#9989;</span>') +
+              '</td>';
+          });
+          t += '</tr>';
+        });
+        t += '</tbody></table>';
+        t += '<div style="font-size:12px;color:#64748b">&#10060; = \u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e21\u0e35\u0e04\u0e23\u0e39 &nbsp;|&nbsp; &#9989; = \u0e21\u0e35\u0e04\u0e23\u0e39\u0e41\u0e25\u0e49\u0e27</div>';
+        return t;
+      })();
 
-  var bodyHtml = '';
-  if(data.noData){
-    bodyHtml = '<div style="text-align:center;padding:1.5rem;color:#b91c1c;font-size:15px">'+
-      '⚠️ ยังไม่มีครูลงทะเบียนในระบบเลย</div>';
-  } else {
-    // สร้าง grid 3×3 (วิชา × ระดับชั้น) แสดง ✅ / ❌
-    var missingSet = new Set(data.missing.map(function(m){ return m.subj+'|'+m.grade; }));
-    bodyHtml += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem">';
-    bodyHtml += '<thead><tr><th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0">วิชา \ ระดับชั้น</th>';
-    GRADES.forEach(function(g){ bodyHtml += '<th style="padding:8px;background:#f8fafc;border:1px solid #e2e8f0;text-align:center">'+g+'</th>'; });
-    bodyHtml += '</tr></thead><tbody>';
-    PISA_SUBJECTS_FULL.forEach(function(subj,si){
-      bodyHtml += '<tr><td style="padding:8px;border:1px solid #e2e8f0;font-weight:600">'+PISA_SUBJECTS_SHORT[si]+'</td>';
-      GRADES.forEach(function(g){
-        var missing = missingSet.has(subj+'|'+g);
-        bodyHtml += '<td style="padding:8px;border:1px solid #e2e8f0;text-align:center;background:'+(missing?'#fff5f5':'#f0fdf4')+'">'+
-          (missing ? '<span style="color:#ef4444;font-size:18px">❌</span>' : '<span style="color:#22c55e;font-size:18px">✅</span>')+
-          '</td>';
-      });
-      bodyHtml += '</tr>';
-    });
-    bodyHtml += '</tbody></table>';
-    bodyHtml += '<div style="font-size:12px;color:#64748b">❌ = ยังไม่มีครูลงทะเบียน &nbsp;|&nbsp; ✅ = มีครูลงทะเบียนแล้ว</div>';
-  }
-
-  // สร้าง modal
-  var existing = document.getElementById('missing-modal');
-  if(existing) existing.remove();
-
+  var ex = document.getElementById('missing-modal');
+  if(ex) ex.remove();
   var modal = document.createElement('div');
   modal.id = 'missing-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem';
   modal.innerHTML =
-    '<div style="background:#fff;border-radius:16px;padding:1.75rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">'+
-        '<span style="font-size:22px"></span>'+
-        '<div style="flex:1">'+
-          '<div style="font-size:16px;font-weight:700;color:#0d2a4a">'+schoolName+'</div>'+
-          '<div style="font-size:12px;color:#64748b;margin-top:2px">ความครอบคลุมครู PISA (3 วิชา × 3 ระดับชั้น)</div>'+
-        '</div>'+
-        '<button onclick="document.getElementById('missing-modal').remove()" '+
-          'style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>'+
-      '</div>'+
-      bodyHtml+
-    '</div>';
-  // คลิกนอก modal ปิด
+    '<div style="background:#fff;border-radius:16px;padding:1.75rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">' +
+        '<div style="flex:1"><div style="font-size:16px;font-weight:700;color:#0d2a4a">'+schoolName+'</div>' +
+        '<div style="font-size:12px;color:#64748b;margin-top:2px">\u0e04\u0e27\u0e32\u0e21\u0e04\u0e23\u0e2d\u0e1a\u0e04\u0e25\u0e38\u0e21\u0e04\u0e23\u0e39 PISA (3 \u0e27\u0e34\u0e0a\u0e32 x 3 \u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19)</div></div>' +
+        '<button onclick="document.getElementById(\'missing-modal\').remove()" ' +
+        'style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">&#10005;</button>' +
+      '</div>' + body + '</div>';
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
   document.body.appendChild(modal);
 }
 
-
-// ===== ฟังก์ชันสำหรับกรอกลิ้งก์ (แทนการอัปโหลดไฟล์) =====
-
-// แสดง preview ลิ้งก์แบบ real-time เมื่อครูพิมพ์/วาง
-function validateLink() {
+/* =========================================================
+   Upload — Link submission
+   ========================================================= */
+function validateLink(){
   var url = document.getElementById('up-link').value.trim();
   var preview = document.getElementById('link-preview');
   var linkText = document.getElementById('link-text');
   var linkTest = document.getElementById('link-test');
-  if (url.length > 10 && url.startsWith('http')) {
+  if(url.length > 10 && url.indexOf('http') === 0){
     preview.style.display = 'flex';
     linkText.textContent = url;
     linkTest.href = url;
@@ -1265,58 +1249,68 @@ function validateLink() {
   }
 }
 
-// บันทึกลิ้งก์ลง Google Sheet ผ่าน JSONP (ไม่มีปัญหา CORS เลย)
-function submitLink() {
+function submitLink(){
   var sc  = document.getElementById('up-school').value.trim();
   var nm  = document.getElementById('up-name').value.trim();
   var su  = document.getElementById('up-subject').value.trim();
   var url = document.getElementById('up-link').value.trim();
-
-  // ตรวจสอบข้อมูลครบก่อนบันทึก
-  if (!sc || !nm || !su) { showAlert('กรุณากรอกข้อมูลให้ครบทุกช่อง', 'err'); return; }
-  if (!url || !url.startsWith('http')) { showAlert('กรุณาวางลิ้งก์ที่ถูกต้อง (ต้องขึ้นต้นด้วย http)', 'err'); return; }
-
+  if(!sc || !nm || !su){ showAlert('\u0e01\u0e23\u0e38\u0e13\u0e32\u0e01\u0e23\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e43\u0e2b\u0e49\u0e04\u0e23\u0e1a\u0e17\u0e38\u0e01\u0e0a\u0e48\u0e2d\u0e07', 'err'); return; }
+  if(!url || url.indexOf('http') !== 0){ showAlert('\u0e01\u0e23\u0e38\u0e13\u0e32\u0e27\u0e32\u0e07\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e17\u0e35\u0e48\u0e16\u0e39\u0e01\u0e15\u0e49\u0e2d\u0e07 (\u0e15\u0e49\u0e2d\u0e07\u0e02\u0e36\u0e49\u0e19\u0e15\u0e49\u0e19\u0e14\u0e49\u0e27\u0e22 http)', 'err'); return; }
   var btn = document.getElementById('ubtn');
   btn.disabled = true;
-  btn.textContent = '⏳ กำลังบันทึก...';
-
-  // ส่งลิ้งก์ไปบันทึกใน Sheet ผ่าน JSONP
+  btn.textContent = '\u0e01\u0e33\u0e25\u0e31\u0e07\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01...';
   saveLinkToSheet(sc, nm, url);
 }
 
-function saveLinkToSheet(sc,nm,url){
-  var cb='sv_'+Date.now(),script=document.createElement('script');
-  script.src=SCRIPT_URL+'?action=savelink&callback='+cb+'&school='+encodeURIComponent(sc)+'&name='+encodeURIComponent(nm)+'&url='+encodeURIComponent(url);
-  window[cb]=function(res){
-    delete window[cb];
-    try{document.head.removeChild(script);}catch(e){}
-    var btn=document.getElementById('ubtn');
-    if(btn){btn.disabled=false;btn.textContent='บันทึกแผนการจัดกิจกรรม';}
-    if(res && res.status==='success'){
-      // ล้างฟอร์มและแสดงผลสำเร็จ
-      document.getElementById('up-link').value='';
-      document.getElementById('link-preview').style.display='none';
-      showAlert('บันทึกสำเร็จ! ลิ้งก์ถูกบันทึกลงระบบแล้ว <a href="'+url+'" target="_blank">คลิกตรวจสอบ</a>','ok');
-      fetchData(); // รีโหลดตารางให้เห็น icon ลิ้งก์ทันที
-    } else {
-      showAlert('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง','err');
-    }
-  };
-  // timeout กรณี server ไม่ตอบกลับ
-  setTimeout(function(){
+function saveLinkToSheet(sc, nm, url){
+  var cb = 'sv_' + Date.now();
+  var script = document.createElement('script');
+  script.src = SCRIPT_URL + '?action=savelink&_t=' + Date.now() + '&callback=' + cb +
+    '&school=' + encodeURIComponent(sc) +
+    '&name='   + encodeURIComponent(nm) +
+    '&url='    + encodeURIComponent(url);
+
+  var timer = setTimeout(function(){
     if(window[cb]){
       delete window[cb];
-      try{document.head.removeChild(script);}catch(e){}
-      var btn=document.getElementById('ubtn');
-      if(btn){btn.disabled=false;btn.textContent='บันทึกแผนการจัดกิจกรรม';}
-      showAlert('❌ หมดเวลาเชื่อมต่อ กรุณาลองใหม่','err');
+      try{ document.head.removeChild(script); }catch(e){}
+      var btn = document.getElementById('ubtn');
+      if(btn){ btn.disabled = false; btn.textContent = '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21'; }
+      showAlert('\u0e2b\u0e21\u0e14\u0e40\u0e27\u0e25\u0e32 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48', 'err');
     }
   }, 15000);
+
+  window[cb] = function(res){
+    clearTimeout(timer);
+    delete window[cb];
+    try{ document.head.removeChild(script); }catch(e){}
+    var btn = document.getElementById('ubtn');
+    if(btn){ btn.disabled = false; btn.textContent = '\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e1c\u0e19\u0e01\u0e32\u0e23\u0e08\u0e31\u0e14\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21'; }
+    if(res && res.status === 'success'){
+      document.getElementById('up-link').value = '';
+      document.getElementById('link-preview').style.display = 'none';
+      showAlert('\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08! \u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e16\u0e39\u0e01\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e25\u0e07\u0e23\u0e30\u0e1a\u0e1a\u0e41\u0e25\u0e49\u0e27 <a href="'+url+'" target="_blank">\u0e04\u0e25\u0e34\u0e01\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a</a>', 'ok');
+      fetchData();
+    } else {
+      showAlert('\u0e40\u0e01\u0e34\u0e14\u0e02\u0e49\u0e2d\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48\u0e2d\u0e35\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07', 'err');
+    }
+  };
+
   document.head.appendChild(script);
 }
-function showAlert(msg,type){var el=document.getElementById('up-alert');el.style.display='block';el.className='upload-alert '+type;el.innerHTML=msg;}
 
+function showAlert(msg, type){
+  var el = document.getElementById('up-alert');
+  el.style.display = 'block';
+  el.className = 'upload-alert ' + type;
+  el.innerHTML = msg;
+}
+
+/* =========================================================
+   Init
+   ========================================================= */
 fetchData();
+
 </script>
 </body>
 </html>
