@@ -7,309 +7,415 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
+    /* ============================================================
+       COLOR PALETTE — ตามภาพตัวอย่าง
+       Base blue  : #1a65c5
+       Sky light  : #7bd6f9
+       Yellow     : #ffee34
+       Pink cream : #fff4d4
+       White bg   : #f0f8ff (ฟ้าอ่อนมาก สบายตา)
+    ============================================================ */
     :root {
-      --primary:   #6366f1;
-      --primary2:  #818cf8;
-      --primary3:  #c7d2fe;
-      --accent:    #06b6d4;
-      --accent2:   #67e8f9;
-      --pink:      #ec4899;
-      --orange:    #f97316;
-      --amber:     #f59e0b;
-      --emerald:   #10b981;
-      --bg:        #f1f5f9;
-      --card:      #ffffff;
-      --border:    #e2e8f0;
-      --text:      #1e293b;
-      --muted:     #64748b;
-      --shadow:    0 4px 24px rgba(99,102,241,.10);
-      --shadow-lg: 0 8px 40px rgba(99,102,241,.16);
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-    /* ── NAV ── */
-    .nav{
-      background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#06b6d4 100%);
-      padding:0 2rem;display:flex;align-items:center;
-      justify-content:space-between;height:62px;
-      position:sticky;top:0;z-index:200;
-      box-shadow:0 2px 20px rgba(79,70,229,.35);
-    }
-    .nav-brand{display:flex;align-items:center;gap:12px}
-    .nav-logo{
-      width:38px;height:38px;
-      background:rgba(255,255,255,.2);
-      border:1.5px solid rgba(255,255,255,.35);
-      border-radius:12px;display:flex;
-      align-items:center;justify-content:center;font-size:20px;
-      backdrop-filter:blur(4px);
-    }
-    .nav-title-main{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
-    .nav-title-sub{font-size:11px;color:rgba(255,255,255,.7);font-weight:400}
-    .nav-tabs{display:flex;gap:6px;align-items:center}
-    .nav-tab{
-      padding:8px 18px;border-radius:9px;font-size:13px;font-weight:500;
-      cursor:pointer;color:rgba(255,255,255,.65);border:1px solid transparent;
-      transition:all .22s;display:flex;align-items:center;gap:6px;
-    }
-    .nav-tab:hover{color:#fff;background:rgba(255,255,255,.12)}
-    .nav-tab.active{
-      color:#4f46e5;background:#fff;
-      box-shadow:0 2px 12px rgba(0,0,0,.15);font-weight:600;
+      --blue:    #1a65c5;   /* น้ำเงินหลัก */
+      --blue2:   #2979d4;   /* น้ำเงินกลาง */
+      --blue3:   #5aa8e8;   /* น้ำเงินอ่อน */
+      --sky:     #7bd6f9;   /* ฟ้าสว่าง */
+      --sky2:    #b8eafc;   /* ฟ้าอ่อนมาก */
+      --sky3:    #e4f6fd;   /* ฟ้าแทบขาว */
+      --yellow:  #ffee34;   /* เหลืองสด */
+      --yellow2: #fff7a0;   /* เหลืองอ่อน */
+      --yellow3: #fffde6;   /* เหลืองแทบขาว */
+      --pink:    #fff4d4;   /* ครีม/ชมพูอ่อน */
+      --pink2:   #ffeab8;   /* ชมพูอมเหลือง */
+      --purple:  #c5b3f5;   /* ม่วงอ่อน */
+      --white:   #ffffff;
+      --bg:      #f0f8ff;   /* พื้นหลังฟ้าอ่อนสบายตา */
+      --gray50:  #f8fafc;
+      --gray100: #f0f4f8;
+      --gray200: #d9e6f2;
+      --gray400: #7fa8c9;
+      --gray600: #3d6b99;
+      --gray900: #0d2a4a;
+      --text:    #1a3a5c;   /* ข้อความหลัก น้ำเงินเข้ม */
+      --shadow:    0 4px 20px rgba(26,101,197,.10);
+      --shadow-lg: 0 8px 40px rgba(26,101,197,.15);
+      --radius:    14px;
+      --radius-lg: 20px;
     }
 
-    /* ── HERO ── */
-    .hero{
-      background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 45%,#0891b2 100%);
-      padding:3rem 2rem 2.5rem;position:relative;overflow:hidden;
-    }
-    .hero::before{
-      content:'';position:absolute;inset:0;
-      background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    .hero::after{
-      content:'';position:absolute;right:-80px;top:-80px;
-      width:320px;height:320px;border-radius:50%;
-      background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);
-    }
-    .hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
-    .hero h1{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3}
-    .hero p{font-size:14px;color:rgba(255,255,255,.78);font-weight:400}
-
-    /* ── PAGE / CONTENT ── */
-    .page{display:none}
-    .page.active{display:block}
-    .content{max-width:1100px;margin:0 auto;padding:1.75rem 2rem 3rem}
-
-    /* ── STATUS BAR ── */
-    .status-bar{
-      display:flex;align-items:center;gap:10px;
-      padding:11px 18px;background:var(--card);
-      border:1px solid var(--border);border-radius:14px;
-      margin-bottom:1.5rem;font-size:13px;color:var(--muted);
-      box-shadow:var(--shadow);
-    }
-    .dot{width:9px;height:9px;border-radius:50%;background:#cbd5e1;flex-shrink:0;transition:all .3s}
-    .dot.ok  {background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}
-    .dot.spin{background:#f59e0b;animation:pulse 1.1s ease-in-out infinite}
-    .dot.err {background:#ef4444}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
-    .btn-refresh{
-      margin-left:auto;padding:6px 16px;border:1px solid var(--border);
-      border-radius:9px;background:var(--bg);font-size:13px;cursor:pointer;
-      font-family:inherit;color:var(--muted);font-weight:500;transition:all .2s;
-    }
-    .btn-refresh:hover{background:var(--primary3);border-color:var(--primary2);color:var(--primary)}
-
-    /* ── STAT CARDS ── */
-    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:1.75rem}
-    .stat-card{
-      border-radius:18px;padding:20px 22px;position:relative;
-      overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;
-      color:#fff;
-    }
-    .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-    .stat-card::after{
-      content:attr(data-icon);position:absolute;right:14px;top:50%;
-      transform:translateY(-50%);font-size:46px;opacity:.18;
-    }
-    .stat-card.c1{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
-    .stat-card.c2{background:linear-gradient(135deg,#0891b2,#06b6d4)}
-    .stat-card.c3{background:linear-gradient(135deg,#d97706,#f59e0b)}
-    .stat-card.c4{background:linear-gradient(135deg,#059669,#10b981)}
-    .stat-label{font-size:11px;font-weight:600;opacity:.82;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-    .stat-value{font-size:38px;font-weight:800;line-height:1;margin-bottom:4px}
-    .stat-sub{font-size:12px;opacity:.72}
-
-    /* ── TOOLBAR ── */
-    .toolbar-card{
-      background:var(--card);border:1px solid var(--border);border-radius:16px;
-      padding:16px 20px;margin-bottom:1.5rem;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      box-shadow:var(--shadow);
-    }
-    .toolbar-card input,.toolbar-card select{
-      padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;
-      font-size:13px;font-family:inherit;background:var(--bg);color:var(--text);transition:all .2s;
-    }
-    .toolbar-card input{flex:1;min-width:200px}
-    .toolbar-card select{min-width:155px}
-    .toolbar-card input:focus,.toolbar-card select:focus{
-      outline:none;border-color:var(--primary);
-      box-shadow:0 0 0 3px rgba(99,102,241,.12);background:#fff;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
     }
 
-    /* ── SECTION HEADING ── */
-    .sec-heading{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;margin-top:2rem}
-    .sec-icon{
-      width:36px;height:36px;border-radius:10px;
-      display:flex;align-items:center;justify-content:center;
-      font-size:17px;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.12);
+    /* ─── NAV ─── */
+    .nav {
+      /* ไล่สีฟ้าสดใสตามภาพตัวอย่าง */
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 50%, var(--blue3) 100%);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 3px 20px rgba(26,101,197,.25);
     }
-    .sec-icon.purple{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
-    .sec-icon.cyan  {background:linear-gradient(135deg,#0891b2,#06b6d4)}
-    .sec-text{font-size:17px;font-weight:700;color:var(--text)}
-    .sec-count{
-      margin-left:auto;background:var(--primary3);color:var(--primary);
-      padding:3px 12px;border-radius:99px;font-size:12px;font-weight:700;
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--yellow), #ffbb00);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 2px 12px rgba(255,238,52,.5);
+    }
+    .nav-title-main { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .nav-title-sub  { font-size: 11px; color: var(--sky2); font-weight: 400; }
+    .nav-tabs { display: flex; gap: 6px; align-items: center; }
+    .nav-tab {
+      padding: 8px 20px; border-radius: 99px;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      color: rgba(255,255,255,.75);
+      border: 1.5px solid rgba(255,255,255,.2);
+      transition: all .22s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .nav-tab:hover { color: #fff; background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.4); }
+    .nav-tab.active {
+      background: var(--yellow);
+      color: var(--blue);
+      font-weight: 700;
+      border-color: var(--yellow);
+      box-shadow: 0 2px 14px rgba(255,238,52,.5);
     }
 
-    /* ── CHARTS ── */
-    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.75rem}
-    .chart-card{
-      background:var(--card);border:1px solid var(--border);border-radius:18px;
-      padding:20px;box-shadow:var(--shadow);transition:box-shadow .2s;
+    /* ─── HERO ─── */
+    .hero {
+      /* ไล่ฟ้าสว่าง ตามสีในภาพ */
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 40%, var(--blue3) 75%, var(--sky) 100%);
+      padding: 3rem 2rem 2.75rem;
+      position: relative; overflow: hidden;
     }
-    .chart-card:hover{box-shadow:var(--shadow-lg)}
-    .chart-card.full{grid-column:1/-1}
-    .chart-header{display:flex;align-items:center;gap:8px;margin-bottom:1rem}
-    .chart-dot{width:10px;height:10px;border-radius:50%}
-    .chart-title{font-size:14px;font-weight:600;color:var(--text)}
-    .chart-wrap{position:relative}
-    .h270{height:270px}.h255{height:255px}.h315{height:315px}
+    /* วงกลมประดับสีเหลืองและชมพู เหมือนในภาพ */
+    .hero::before {
+      content: '';
+      position: absolute; right: -100px; top: -100px;
+      width: 380px; height: 380px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,238,52,.18) 0%, transparent 65%);
+    }
+    .hero::after {
+      content: '';
+      position: absolute; left: 5%; bottom: -60px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,214,249,.2) 0%, transparent 65%);
+    }
+    /* เส้นประดับมุมขวาบน เหมือนในภาพ */
+    .hero-dots {
+      position: absolute; right: 60px; top: 30px;
+      width: 120px; height: 120px;
+      background-image: radial-gradient(circle, rgba(255,255,255,.25) 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+      opacity: .6;
+    }
+    .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+    .hero h1 {
+      font-size: 27px; font-weight: 700; color: #fff;
+      margin-bottom: 8px; line-height: 1.4;
+      text-shadow: 0 1px 8px rgba(0,0,0,.12);
+    }
+    .hero p { font-size: 15px; color: var(--sky2); line-height: 1.6; }
 
-    /* ── TABLE ── */
-    .table-actions{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
-    .btn-export{
-      display:inline-flex;align-items:center;gap:7px;padding:9px 20px;
-      border:none;border-radius:10px;
-      background:linear-gradient(135deg,var(--primary),#8b5cf6);
-      color:#fff;font-size:13px;font-weight:600;cursor:pointer;
-      font-family:inherit;box-shadow:0 2px 14px rgba(99,102,241,.35);transition:all .22s;
-    }
-    .btn-export:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(99,102,241,.45)}
-    .table-wrap{
-      background:var(--card);border:1px solid var(--border);
-      border-radius:18px;overflow:hidden;overflow-x:auto;box-shadow:var(--shadow);
-    }
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    thead{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
-    th{
-      padding:13px 16px;text-align:left;font-weight:600;
-      color:rgba(255,255,255,.92);white-space:nowrap;
-      font-size:11px;text-transform:uppercase;letter-spacing:.06em;
-    }
-    td{padding:11px 16px;border-bottom:1px solid #f1f5f9;color:var(--text);vertical-align:middle}
-    tr:last-child td{border-bottom:none}
-    tr:hover td{background:#f8faff}
-    .num{color:#cbd5e1;font-size:12px;font-weight:700}
-    .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
-    .b-school {background:#ede9fe;color:#5b21b6}
-    .b-rank   {background:#dbeafe;color:#1d4ed8}
-    .b-subj   {background:#d1fae5;color:#065f46}
-    .b-pending{background:#fef3c7;color:#92400e}
-    .link-file{
-      display:inline-flex;align-items:center;gap:5px;
-      color:#4f46e5;font-size:12px;font-weight:600;text-decoration:none;
-      background:#ede9fe;padding:4px 11px;border-radius:7px;transition:background .2s;
-    }
-    .link-file:hover{background:#c7d2fe}
+    /* ─── PAGES ─── */
+    .page { display: none; }
+    .page.active { display: block; }
+    .content { max-width: 1100px; margin: 0 auto; padding: 1.75rem 2rem 3rem; }
 
-    /* ── PAGINATION ── */
-    .pagination{
-      display:flex;align-items:center;justify-content:space-between;
-      margin-top:1.25rem;font-size:13px;color:var(--muted);flex-wrap:wrap;gap:8px;
+    /* ─── STATUS BAR ─── */
+    .status-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 18px;
+      background: var(--white);
+      border: 1px solid var(--gray200);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      font-size: 13px; color: var(--gray600);
+      box-shadow: var(--shadow);
     }
-    .page-btn{
-      padding:7px 16px;border:1.5px solid var(--border);border-radius:9px;
-      background:var(--card);cursor:pointer;font-family:inherit;
-      font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;transition:all .2s;
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gray200); flex-shrink: 0; transition: all .3s; }
+    .dot.ok   { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,.5); }
+    .dot.spin { background: #f59e0b; animation: pulse 1.1s ease-in-out infinite; }
+    .dot.err  { background: #ef4444; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    .btn-refresh {
+      margin-left: auto; padding: 6px 16px;
+      border: 1.5px solid var(--gray200); border-radius: 8px;
+      background: var(--gray50); font-size: 13px; cursor: pointer;
+      font-family: inherit; color: var(--gray600); font-weight: 500;
+      transition: all .2s;
     }
-    .page-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary);background:#f5f3ff}
-    .page-btn:disabled{opacity:.35;cursor:default}
+    .btn-refresh:hover { background: var(--sky3); border-color: var(--sky); color: var(--blue); }
 
-    /* ── UPLOAD PAGE ── */
-    .upload-hero{
-      background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#0891b2 100%);
-      padding:2.75rem 2rem 2.25rem;position:relative;overflow:hidden;
+    /* ─── STAT CARDS ─── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px; margin-bottom: 1.75rem;
     }
-    .upload-hero::before{
-      content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,.06),transparent 60%);
+    .stat-card {
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      position: relative; overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .22s, box-shadow .22s;
+      cursor: default;
+      border: 1px solid transparent;
     }
-    .upload-hero-inner{max-width:600px;margin:0 auto;position:relative;z-index:1}
-    .upload-hero h2{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
-    .upload-hero p {font-size:14px;color:rgba(255,255,255,.75)}
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .stat-card::after {
+      content: attr(data-icon);
+      position: absolute; right: 18px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 46px; opacity: .2;
+    }
+    /* สี card ตามโทนสีในภาพ — สว่าง สบายตา */
+    .stat-card.c1 { background: linear-gradient(135deg, var(--blue), var(--blue3)); color: #fff; }
+    .stat-card.c2 { background: linear-gradient(135deg, #ffbb00, var(--yellow)); color: var(--text); }
+    .stat-card.c3 { background: linear-gradient(135deg, var(--blue3), var(--sky)); color: #fff; }
+    .stat-card.c4 { background: linear-gradient(135deg, #e879a8, #f9a8d4); color: #fff; }
+    .stat-label { font-size: 11px; font-weight: 600; opacity: .8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+    .stat-value { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+    .stat-sub   { font-size: 12px; opacity: .72; }
 
-    .upload-content{max-width:600px;margin:0 auto;padding:2rem 2rem 3rem}
-    .upload-card{
-      background:var(--card);border:1px solid var(--border);
-      border-radius:22px;padding:2.25rem;box-shadow:var(--shadow-lg);
+    /* ─── TOOLBAR ─── */
+    .toolbar-card {
+      background: var(--white);
+      border: 1px solid var(--gray200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 1.5rem;
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      box-shadow: var(--shadow);
     }
-    .form-group{margin-bottom:1.25rem}
-    .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
-    .req{color:#ef4444}
-    .form-group select,.form-group input[type=text]{
-      width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:11px;
-      font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);transition:all .2s;
+    .toolbar-card input,
+    .toolbar-card select {
+      padding: 9px 14px;
+      border: 1.5px solid var(--gray200);
+      border-radius: 10px;
+      font-size: 13px; font-family: inherit;
+      background: var(--gray50); color: var(--text);
+      transition: border .2s, box-shadow .2s;
     }
-    .form-group select:focus,.form-group input:focus{
-      outline:none;border-color:var(--primary);
-      box-shadow:0 0 0 3px rgba(99,102,241,.12);background:#fff;
+    .toolbar-card input  { flex: 1; min-width: 200px; }
+    .toolbar-card select { min-width: 160px; }
+    .toolbar-card input:focus,
+    .toolbar-card select:focus {
+      outline: none;
+      border-color: var(--blue3);
+      box-shadow: 0 0 0 3px rgba(90,168,232,.15);
+      background: #fff;
     }
-    .form-hint{font-size:12px;color:var(--muted);margin-top:5px}
-    .hr{border:none;border-top:1px solid #f1f5f9;margin:1.5rem 0}
 
-    .dropzone{
-      border:2px dashed #c7d2fe;border-radius:16px;padding:2.75rem 1rem;
-      text-align:center;cursor:pointer;background:#f5f3ff;transition:all .25s;
+    /* ─── SECTION HEADING ─── */
+    .sec-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; margin-top: 2rem; }
+    .sec-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--blue), var(--blue3));
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 2px 10px rgba(26,101,197,.25);
+      flex-shrink: 0;
     }
-    .dropzone:hover,.dropzone.over{border-color:var(--primary);background:#ede9fe}
-    .dz-icon{font-size:44px;margin-bottom:10px;display:block}
-    .dz-text{font-size:14px;color:var(--muted)}
-    .dz-text strong{color:var(--primary)}
+    .sec-text  { font-size: 17px; font-weight: 700; color: var(--text); }
+    .sec-count {
+      margin-left: auto;
+      background: var(--sky3); color: var(--blue);
+      padding: 3px 13px; border-radius: 99px;
+      font-size: 12px; font-weight: 700;
+      border: 1px solid var(--sky2);
+    }
 
-    .file-info{
-      display:none;margin-top:.85rem;padding:12px 16px;
-      background:#f5f3ff;border:1.5px solid #c7d2fe;border-radius:12px;
-      font-size:13px;align-items:center;gap:12px;
+    /* ─── CHARTS ─── */
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.75rem; }
+    .chart-card {
+      background: var(--white);
+      border: 1px solid var(--gray200);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s, transform .2s;
     }
-    .file-info.show{display:flex}
-    .file-clear{
-      margin-left:auto;background:none;border:none;cursor:pointer;
-      color:#a5b4fc;font-size:20px;line-height:1;padding:0 2px;transition:color .2s;
-    }
-    .file-clear:hover{color:#ef4444}
+    .chart-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .chart-card.full { grid-column: 1 / -1; }
+    .chart-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1.1rem; }
+    .chart-pip { width: 10px; height: 10px; border-radius: 3px; }
+    .chart-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .chart-wrap { position: relative; }
+    .h270 { height: 270px; } .h250 { height: 250px; } .h310 { height: 310px; }
 
-    .prog-wrap{display:none;margin-top:1rem}
-    .prog-wrap.show{display:block}
-    .prog-bg{background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden}
-    .prog-fill{
-      background:linear-gradient(90deg,var(--primary),var(--accent));
-      height:100%;width:0;border-radius:99px;transition:width .4s;
+    /* ─── TABLE ─── */
+    .table-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+    .btn-export {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--blue3));
+      color: #fff; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 2px 12px rgba(26,101,197,.25);
+      transition: all .22s;
     }
-    .prog-label{font-size:12px;color:var(--muted);margin-top:6px;text-align:right}
-
-    .btn-upload{
-      width:100%;padding:14px;border:none;border-radius:13px;
-      background:linear-gradient(135deg,#4f46e5,#7c3aed,#0891b2);
-      color:#fff;font-size:16px;font-weight:700;cursor:pointer;
-      font-family:inherit;margin-top:.75rem;letter-spacing:.02em;
-      box-shadow:0 4px 22px rgba(99,102,241,.38);transition:all .25s;
+    .btn-export:hover { filter: brightness(1.08); box-shadow: 0 4px 20px rgba(26,101,197,.35); transform: translateY(-1px); }
+    .table-wrap {
+      background: var(--white);
+      border: 1px solid var(--gray200);
+      border-radius: var(--radius-lg);
+      overflow: hidden; overflow-x: auto;
+      box-shadow: var(--shadow);
     }
-    .btn-upload:hover:not(:disabled){
-      box-shadow:0 6px 30px rgba(99,102,241,.50);transform:translateY(-2px);
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: linear-gradient(135deg, var(--blue), var(--blue2)); }
+    th {
+      padding: 13px 16px; text-align: left;
+      font-weight: 600; color: rgba(255,255,255,.95);
+      white-space: nowrap; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .06em;
     }
-    .btn-upload:disabled{opacity:.4;cursor:default;transform:none}
+    td { padding: 11px 16px; border-bottom: 1px solid var(--gray100); vertical-align: middle; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--sky3); }
+    .num { color: var(--gray400); font-size: 12px; font-weight: 600; }
 
-    .up-alert{
-      padding:14px 18px;border-radius:13px;font-size:14px;margin-top:1.25rem;
-      line-height:1.7;display:none;
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap;
     }
-    .up-alert.ok {background:#ecfdf5;color:#065f46;border:1.5px solid #6ee7b7}
-    .up-alert.err{background:#fff5f5;color:#9b1c1c;border:1.5px solid #fca5a5}
-    .up-alert a{color:inherit;font-weight:700}
+    .b-school  { background: var(--sky3);    color: var(--blue); border: 1px solid var(--sky2); }
+    .b-rank    { background: var(--yellow3); color: #7a5c00;     border: 1px solid var(--yellow2); }
+    .b-subj    { background: #f0ebff;        color: #5b21b6;     border: 1px solid #d8b4fe; }
+    .b-pending { background: var(--pink);    color: #92400e;     border: 1px solid var(--pink2); }
+    .link-file {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: var(--blue); font-size: 12px; font-weight: 700;
+      text-decoration: none;
+      background: var(--sky3); padding: 4px 10px; border-radius: 6px;
+      border: 1px solid var(--sky2);
+      transition: background .2s;
+    }
+    .link-file:hover { background: var(--sky2); }
 
-    .empty{text-align:center;padding:4rem 2rem;color:var(--muted);font-size:14px}
-    .empty-icon{font-size:48px;display:block;margin-bottom:12px;opacity:.4}
+    /* ─── PAGINATION ─── */
+    .pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 1.25rem; font-size: 13px; color: var(--gray400); flex-wrap: wrap; gap: 8px; }
+    .page-btn {
+      padding: 7px 16px;
+      border: 1.5px solid var(--gray200); border-radius: 9px;
+      background: var(--white); cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      color: var(--gray600); margin-left: 6px; transition: all .2s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--blue3); color: var(--blue); background: var(--sky3); }
+    .page-btn:disabled { opacity: .35; cursor: default; }
 
-    @media(max-width:700px){
-      .charts-grid{grid-template-columns:1fr}
-      .chart-card.full{grid-column:auto}
-      .nav-title-sub{display:none}
-      .content,.upload-content{padding:1.25rem 1rem 2rem}
+    /* ─── UPLOAD PAGE ─── */
+    .upload-hero {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 50%, var(--sky) 100%);
+      padding: 2.75rem 2rem 2.25rem;
+      position: relative; overflow: hidden;
+    }
+    .upload-hero::before {
+      content: '';
+      position: absolute; right: -80px; top: -80px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,238,52,.18), transparent 65%);
+    }
+    .upload-hero-inner { max-width: 620px; margin: 0 auto; position: relative; z-index: 1; }
+    .upload-hero h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .upload-hero p  { font-size: 14px; color: var(--sky2); }
+
+    .upload-content { max-width: 620px; margin: 0 auto; padding: 2rem; }
+    .upload-card {
+      background: var(--white);
+      border: 1px solid var(--gray200);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .req { color: #ef4444; }
+    .form-group select,
+    .form-group input[type=text] {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gray200); border-radius: 10px;
+      font-size: 14px; font-family: inherit;
+      background: var(--gray50); color: var(--text);
+      transition: border .2s, box-shadow .2s;
+    }
+    .form-group select:focus, .form-group input:focus {
+      outline: none; border-color: var(--blue3);
+      box-shadow: 0 0 0 3px rgba(90,168,232,.15); background: #fff;
+    }
+    .form-hint { font-size: 12px; color: var(--gray400); margin-top: 5px; }
+    .divider { border: none; border-top: 1px solid var(--gray100); margin: 1.5rem 0; }
+
+    .dropzone {
+      border: 2px dashed var(--sky2); border-radius: var(--radius);
+      padding: 2.5rem 1rem; text-align: center;
+      cursor: pointer; transition: all .25s;
+      background: var(--sky3);
+    }
+    .dropzone:hover, .dropzone.over { border-color: var(--blue); background: var(--sky2); }
+    .dz-icon { font-size: 44px; margin-bottom: 10px; display: block; }
+    .dz-text { font-size: 14px; color: var(--gray600); }
+    .dz-text strong { color: var(--blue); }
+
+    .file-info {
+      display: none; margin-top: .85rem;
+      padding: 12px 16px;
+      background: var(--sky3); border: 1.5px solid var(--sky2);
+      border-radius: 12px; font-size: 13px; color: var(--blue);
+      align-items: center; gap: 12px;
+    }
+    .file-info.show { display: flex; }
+    .file-clear { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--gray400); font-size: 20px; line-height: 1; transition: color .2s; }
+    .file-clear:hover { color: #ef4444; }
+
+    .progress-wrap { display: none; margin-top: 1rem; }
+    .progress-wrap.show { display: block; }
+    .progress-bg { background: var(--gray100); border-radius: 99px; height: 8px; overflow: hidden; }
+    .progress-fill {
+      background: linear-gradient(90deg, var(--blue), var(--sky));
+      height: 100%; width: 0; border-radius: 99px; transition: width .4s;
+    }
+    .progress-label { font-size: 12px; color: var(--gray400); margin-top: 6px; text-align: right; }
+
+    .btn-upload {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue), var(--blue3));
+      color: #fff; font-size: 16px; font-weight: 700;
+      cursor: pointer; font-family: inherit; margin-top: .75rem;
+      box-shadow: 0 4px 20px rgba(26,101,197,.3);
+      transition: all .25s;
+    }
+    .btn-upload:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 6px 28px rgba(26,101,197,.4); transform: translateY(-2px); }
+    .btn-upload:disabled { opacity: .4; cursor: default; transform: none; }
+
+    .upload-alert { padding: 14px 18px; border-radius: 12px; font-size: 14px; margin-top: 1.25rem; line-height: 1.7; display: none; }
+    .upload-alert.ok  { background: #f0fdf4; color: #14532d; border: 1.5px solid #86efac; }
+    .upload-alert.err { background: #fff5f5; color: #7f1d1d; border: 1.5px solid #fca5a5; }
+    .upload-alert a   { color: inherit; font-weight: 700; }
+
+    .empty { text-align: center; padding: 4rem 2rem; color: var(--gray400); font-size: 14px; }
+    .empty-icon { font-size: 50px; display: block; margin-bottom: 12px; opacity: .4; }
+
+    @media (max-width: 700px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card.full { grid-column: auto; }
+      .nav-title-sub { display: none; }
+      .content { padding: 1.25rem 1rem 2rem; }
     }
   </style>
 </head>
@@ -318,9 +424,9 @@
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-brand">
-    <div class="nav-logo">📋</div>
+    <div class="nav-logo">🎓</div>
     <div>
-      <div class="nav-title-main">PISA ป.4 – ป.6</div>
+      <div class="nav-title-main">PISA ป.4–ป.6</div>
       <div class="nav-title-sub">สพป.เชียงใหม่ เขต 2</div>
     </div>
   </div>
@@ -332,8 +438,8 @@
 
 <!-- หน้าแดชบอร์ด -->
 <div id="page-dashboard" class="page active">
-
   <div class="hero">
+    <div class="hero-dots"></div>
     <div class="hero-inner">
       <h1>📋 ข้อมูลครูผู้รับผิดชอบ PISA ระดับชั้น ป.4, ป.5, ป.6</h1>
       <p>สำนักงานเขตพื้นที่การศึกษาประถมศึกษาเชียงใหม่ เขต 2</p>
@@ -341,14 +447,13 @@
   </div>
 
   <div class="content">
-
     <div class="status-bar">
       <div class="dot spin" id="dot"></div>
       <span id="status-txt">กำลังดึงข้อมูล...</span>
       <button class="btn-refresh" onclick="fetchData()">⟳ รีเฟรช</button>
     </div>
 
-    <!-- Stat cards -->
+    <!-- Stat Cards -->
     <div class="stats" id="stats" style="display:none">
       <div class="stat-card c1" data-icon="👨‍🏫">
         <div class="stat-label">ผู้ลงทะเบียนทั้งหมด</div>
@@ -366,13 +471,13 @@
         <div class="stat-sub">กลุ่มสาระการเรียนรู้</div>
       </div>
       <div class="stat-card c4" data-icon="✅">
-        <div class="stat-label">ส่งแผนการสอนแล้ว</div>
+        <div class="stat-label">ส่งแผนแล้ว</div>
         <div class="stat-value" id="s-uploaded">0</div>
         <div class="stat-sub">ครูที่อัปโหลดไฟล์แล้ว</div>
       </div>
     </div>
 
-    <!-- Filters -->
+    <!-- Toolbar -->
     <div class="toolbar-card" id="toolbar" style="display:none">
       <input type="text" id="search" placeholder="🔍  ค้นหาชื่อครู หรือโรงเรียน..." oninput="applyFilter()"/>
       <select id="fil-school" onchange="applyFilter()"><option value="">— เลือกโรงเรียน —</option></select>
@@ -387,30 +492,30 @@
     <!-- Charts -->
     <div id="charts-section" style="display:none">
       <div class="sec-heading">
-        <div class="sec-icon purple">📊</div>
+        <div class="sec-icon">📊</div>
         <div class="sec-text">แผนภูมิสรุปภาพรวม</div>
       </div>
       <div class="charts-grid">
         <div class="chart-card full">
           <div class="chart-header">
-            <div class="chart-dot" style="background:#6366f1"></div>
+            <div class="chart-pip" style="background:var(--blue)"></div>
             <div class="chart-title">จำนวนครูแยกตามกลุ่มสาระการเรียนรู้</div>
           </div>
           <div class="chart-wrap h270"><canvas id="chart-subj"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-header">
-            <div class="chart-dot" style="background:#8b5cf6"></div>
+            <div class="chart-pip" style="background:#f59e0b"></div>
             <div class="chart-title">สัดส่วนวิทยฐานะ</div>
           </div>
-          <div class="chart-wrap h255"><canvas id="chart-rank"></canvas></div>
+          <div class="chart-wrap h250"><canvas id="chart-rank"></canvas></div>
         </div>
         <div class="chart-card">
           <div class="chart-header">
-            <div class="chart-dot" style="background:#06b6d4"></div>
+            <div class="chart-pip" style="background:var(--sky)"></div>
             <div class="chart-title">Top 10 โรงเรียน (จำนวนครูลงทะเบียน)</div>
           </div>
-          <div class="chart-wrap h315"><canvas id="chart-school"></canvas></div>
+          <div class="chart-wrap h310"><canvas id="chart-school"></canvas></div>
         </div>
       </div>
     </div>
@@ -418,7 +523,7 @@
     <!-- Table -->
     <div id="table-section" style="display:none">
       <div class="sec-heading">
-        <div class="sec-icon cyan">📋</div>
+        <div class="sec-icon">📋</div>
         <div class="sec-text">รายชื่อครูทั้งหมด</div>
         <div class="sec-count" id="filtered-count"></div>
       </div>
@@ -430,7 +535,7 @@
           <thead>
             <tr>
               <th>#</th><th>โรงเรียน</th><th>ชื่อ-นามสกุล</th>
-              <th>วิทยฐานะ</th><th>กลุ่มสาระ</th><th>ระดับชั้น</th><th>แผนการสอน</th>
+              <th>วิทยฐานะ</th><th>กลุ่มสาระ</th><th>ระดับชั้น</th><th>กิจกรรมการเรียนรู้</th>
             </tr>
           </thead>
           <tbody id="tbody">
@@ -448,7 +553,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -462,7 +566,6 @@
   </div>
   <div class="upload-content">
     <div class="upload-card">
-
       <div class="form-group">
         <label>โรงเรียน <span class="req">*</span></label>
         <select id="up-school"><option value="">— เลือกโรงเรียน —</option></select>
@@ -486,12 +589,10 @@
           <option>การงานอาชีพ</option>
         </select>
       </div>
-
-      <hr class="hr"/>
-
+      <hr class="divider"/>
       <div class="form-group">
         <label>ไฟล์แผนการจัดกิจกรรม <span class="req">*</span>
-          <span style="color:var(--muted);font-weight:400"> — PDF, DOC, DOCX, PPT, PPTX (ไม่เกิน 20 MB)</span>
+          <span style="color:var(--gray400);font-weight:400"> — PDF, DOC, DOCX, PPT, PPTX (ไม่เกิน 20 MB)</span>
         </label>
         <div class="dropzone" id="dz"
           onclick="document.getElementById('fi').click()"
@@ -501,68 +602,57 @@
           <span class="dz-icon">📁</span>
           <div class="dz-text">ลากไฟล์มาวางที่นี่ หรือ <strong>คลิกเพื่อเลือกไฟล์</strong></div>
         </div>
-        <input type="file" id="fi" style="display:none"
-          accept=".pdf,.doc,.docx,.ppt,.pptx" onchange="pickFile(this.files[0])">
+        <input type="file" id="fi" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx" onchange="pickFile(this.files[0])">
         <div class="file-info" id="finfo">
           <span style="font-size:26px" id="ficon">📄</span>
           <div style="min-width:0">
-            <div style="font-weight:600;word-break:break-all" id="fname"></div>
-            <div style="color:var(--muted);font-size:12px;margin-top:2px" id="fsize"></div>
+            <div style="font-weight:700;word-break:break-all" id="fname"></div>
+            <div style="font-size:12px;margin-top:2px;opacity:.7" id="fsize"></div>
           </div>
           <button class="file-clear" onclick="clearFile()">✕</button>
         </div>
       </div>
-
-      <div class="prog-wrap" id="pw">
-        <div class="prog-bg"><div class="prog-fill" id="pf"></div></div>
-        <div class="prog-label" id="pl">กำลังอัปโหลด...</div>
+      <div class="progress-wrap" id="pw">
+        <div class="progress-bg"><div class="progress-fill" id="pf"></div></div>
+        <div class="progress-label" id="pl">กำลังอัปโหลด...</div>
       </div>
-
-      <button class="btn-upload" id="ubtn" onclick="uploadFile()">
-        📤 อัปโหลดแผนการสอน
-      </button>
-      <div class="up-alert" id="up-alert"></div>
+      <button class="btn-upload" id="ubtn" onclick="uploadFile()">📤 อัปโหลดแผนการสอน</button>
+      <div class="upload-alert" id="up-alert"></div>
     </div>
   </div>
 </div>
 
 <script>
 var SCRIPT_URL='https://script.google.com/macros/s/AKfycbze4xGIjdPaNjvqdgyf0LELu_iS0ml21rfqd5_l5EzhlPOuhJIKmY5zb1lyShA5iHa5XQ/exec';
-
 var SCHOOL_LIST=[
-  'ชลประทานเขื่อนแม่กวงจิราธิวัฒน์อุปถัมภ์','ชุมชนบ้านดง','ชุมชนบ้านโป่ง',
-  'ชุมชนบ้านแม่สาบ','ชุมชนสหกรณ์นิคมวิทยา','ชุมชนวัดช่อแล',
-  'ทรายทองราษฎร์อุทิศ','เจ้าแม่หลวงอุปถัมภ์ 2','เจ้าพ่อหลวงอุปถัมภ์ 7',
+  'ชลประทานเขื่อนแม่กวงจิราธิวัฒน์อุปถัมภ์','ชุมชนบ้านดง','ชุมชนบ้านโป่ง','ชุมชนบ้านแม่สาบ',
+  'ชุมชนสหกรณ์นิคมวิทยา','ชุมชนวัดช่อแล','ทรายทองราษฎร์อุทิศ',
+  'เจ้าแม่หลวงอุปถัมภ์ 2','เจ้าพ่อหลวงอุปถัมภ์ 7',
   'บ้านก๋ายน้อย','บ้านกองแหะ','บ้านกาดฮาว','บ้านกิ่วเสือ','บ้านขุนแจ๋',
-  'บ้านต้นผึ้ง','บ้านต้นรุง','บ้านทับเดื่อ','บ้านท่ามะเกี๋ยง','บ้านท่าเกวียน',
-  'บ้านทุ่งโป่ง','บ้านนากู่','บ้านนาบุญโหล่งขอด','บ้านน้ำริน',
-  'บ้านบวกจั่น','บ้านบวกเปา','บ้านบวกหมื้อ','บ้านบ่อแก้ว',
-  'บ้านปง(อินทขิลวิทยาคาร)','บ้านปางขุม','บ้านปางไฮ','บ้านปางไม้แดง',
-  'บ้านปางกว้าง','บ้านปางฮ่าง','บ้านปางห้วยตาด',
+  'บ้านต้นผึ้ง','บ้านต้นรุง','บ้านทับเดื่อ','บ้านท่ามะเกี๋ยง','บ้านท่าเกวียน','บ้านทุ่งโป่ง',
+  'บ้านนากู่','บ้านนาบุญโหล่งขอด','บ้านน้ำริน','บ้านบวกจั่น','บ้านบวกเปา',
+  'บ้านบวกหมื้อ','บ้านบ่อแก้ว','บ้านปง(อินทขิลวิทยาคาร)','บ้านปางขุม',
+  'บ้านปางไฮ','บ้านปางไม้แดง','บ้านปางกว้าง','บ้านปางฮ่าง','บ้านปางห้วยตาด',
   'บ้านป่าก้าง','บ้านป่าตุ้ม','บ้านป่าติ้ว','บ้านป่าไหน่','บ้านป่าบง','บ้านป่าเหมือด',
   'บ้านผาหมอน','บ้านผึ้ง','บ้านพระนอน','บ้านโปง','บ้านโป่ง','บ้านโป่งแยงใน',
   'บ้านแจ่งกู่เรือง','บ้านแม่โจ้','บ้านแม่โต๋','บ้านแม่ไคร้','บ้านแม่ขะปู',
-  'บ้านแม่แต','บ้านแม่ตะมาน','บ้านแม่ปั๋ง','บ้านแม่ปาคี','บ้านแม่แฝก',
-  'บ้านแม่แมม','บ้านแม่ยางห้า','บ้านแม่ยางห้า สาขาบ้านเด่นฮ่อม#รร.สาขา .',
-  'บ้านแม่ย่อย(เจียร-สมศรี  วังทองคำ)','บ้านแม่เลา','บ้านแม่แว',
-  'บ้านแม่สา','บ้านแม่แสะ','บ้านแม่เหียะ',
-  'บ้านแมโต๋ สาขาบ้านห้วยเต่า#รร.สาขา .','บ้านแม่ลานคำ',
-  'บ้านแม่ลานคำ สาขาบ้านป่าคานอก#รร.สาขา .',
+  'บ้านแม่แต','บ้านแม่ตะมาน','บ้านแม่ปั๋ง','บ้านแม่ปาคี','บ้านแม่แฝก','บ้านแม่แมม',
+  'บ้านแม่ยางห้า','บ้านแม่ยางห้า สาขาบ้านเด่นฮ่อม#รร.สาขา .',
+  'บ้านแม่ย่อย(เจียร-สมศรี  วังทองคำ)','บ้านแม่เลา','บ้านแม่แว','บ้านแม่สา',
+  'บ้านแม่แสะ','บ้านแม่เหียะ','บ้านแมโต๋ สาขาบ้านห้วยเต่า#รร.สาขา .',
+  'บ้านแม่ลานคำ','บ้านแม่ลานคำ สาขาบ้านป่าคานอก#รร.สาขา .',
   'บ้านเมืองก๊ะ','บ้านเมืองกื้ด','บ้านเมืองขอน','บ้านร่มหลวง','บ้านริมใต้',
   'บ้านสันกลาง','บ้านสันคะยอม','บ้านสันปง','บ้านสันพระเนตร','บ้านสันศรี',
-  'บ้านสะลวงนอก','บ้านศรีงาม','บ้านศรีบุญเรือง',
-  'บ้านหลักปัน','บ้านหลวง','บ้านหนองไคร้','บ้านหนองปลามัน',
-  'บ้านหนองปิด','บ้านหนองมะจับ','บ้านหนองหาร (ทิพวันอุทิศ)','บ้านหัวฝาย',
-  'บ้านห้วยบง','บ้านห้วยเกี๋ยง','บ้านห้วยน้ำจาง',
-  'บ้านเจดีย์แม่ครัว','บ้านเป้าวิทยาคาร',
-  'ประชาสามัคคีวิทยา','ประดู่วิทยา','ป่าแป๋วิทยา','ป่าจี้วังแดงวิทยา','พร้าวบูรพา',
-  'มูลนิธิมหาราช 5','ร่ำเปิงวิทยา','รัปปาปอร์ต (ตชด.บำรุงที่ 92)',
-  'วัดงิ้วเฒ่า','วัดทรายมูล','วัดทุ่งหลวง','วัดท่าข้าม','วัดนาเม็ง',
-  'วัดบ้านเหล่า','วัดบ้านป้อก','วัดปางเติม',
+  'บ้านสะลวงนอก','บ้านศรีงาม','บ้านศรีบุญเรือง','บ้านหลักปัน','บ้านหลวง',
+  'บ้านหนองไคร้','บ้านหนองปลามัน','บ้านหนองปิด','บ้านหนองมะจับ',
+  'บ้านหนองหาร (ทิพวันอุทิศ)','บ้านหัวฝาย','บ้านห้วยบง','บ้านห้วยเกี๋ยง','บ้านห้วยน้ำจาง',
+  'บ้านเจดีย์แม่ครัว','บ้านเป้าวิทยาคาร','ประชาสามัคคีวิทยา','ประดู่วิทยา',
+  'ป่าแป๋วิทยา','ป่าจี้วังแดงวิทยา','พร้าวบูรพา','มูลนิธิมหาราช 5',
+  'ร่ำเปิงวิทยา','รัปปาปอร์ต (ตชด.บำรุงที่ 92)','วัดงิ้วเฒ่า','วัดทรายมูล',
+  'วัดทุ่งหลวง','วัดท่าข้าม','วัดนาเม็ง','วัดบ้านเหล่า','วัดบ้านป้อก','วัดปางเติม',
   'วัดปางเติมสาขาบ้านขุนสาบ#รร.สาขา .','วัดปางมะกล้วย','วัดยั้งเมิน',
-  'วัดแม่กะ','วัดแม่แก้ดน้อย','วัดแม่เลย',
-  'วัดโป่งแยงเฉลิมพระเกียรติ','วัดสันคะยอม','วัดสันทรายมูล(มงคลวิทยา)',
-  'วัดหนองออน','วัดห้วยไร่',
+  'วัดแม่กะ','วัดแม่แก้ดน้อย','วัดแม่เลย','วัดโป่งแยงเฉลิมพระเกียรติ',
+  'วัดสันคะยอม','วัดสันทรายมูล(มงคลวิทยา)','วัดหนองออน','วัดห้วยไร่',
   'สบเปิงวิทยา','สหกรณ์ดำริ','สันทรายหลวง','สันป่าสักวิทยา',
   'สันป่ายางวิทยาคาร','สันมหาพนวิทยา'
 ].filter(function(v,i,a){return a.indexOf(v)===i;})
@@ -570,194 +660,146 @@ var SCHOOL_LIST=[
 
 ['fil-school','up-school'].forEach(function(id){
   var sel=document.getElementById(id);
-  SCHOOL_LIST.forEach(function(s){
-    var o=document.createElement('option');o.value=o.textContent=s;sel.appendChild(o);
-  });
+  SCHOOL_LIST.forEach(function(s){var o=document.createElement('option');o.value=o.textContent=s;sel.appendChild(o);});
 });
 
 function switchTab(tab){
-  document.querySelectorAll('.nav-tab').forEach(function(t,i){
-    t.classList.toggle('active',['dashboard','upload'][i]===tab);
-  });
+  document.querySelectorAll('.nav-tab').forEach(function(t,i){t.classList.toggle('active',['dashboard','upload'][i]===tab);});
   document.getElementById('page-dashboard').classList.toggle('active',tab==='dashboard');
   document.getElementById('page-upload').classList.toggle('active',tab==='upload');
 }
 
 var allData=[],filtered=[],currentPage=1,PAGE_SIZE=25;
 var chartSubj=null,chartRank=null,chartSchool=null;
-var COLORS=['#6366f1','#06b6d4','#f59e0b','#10b981','#ec4899',
-            '#8b5cf6','#f97316','#3b82f6','#14b8a6','#84cc16','#ef4444'];
+var COLORS=['#1a65c5','#f59e0b','#7bd6f9','#e879a8','#22c55e','#8b5cf6','#f97316','#0ea5e9','#84cc16','#6366f1','#14b8a6'];
 
-function setStatus(msg,state){
-  document.getElementById('status-txt').textContent=msg;
-  document.getElementById('dot').className='dot '+(state||'');
-}
+function setStatus(msg,state){document.getElementById('status-txt').textContent=msg;document.getElementById('dot').className='dot '+(state||'');}
 
 function fetchData(){
   setStatus('กำลังดึงข้อมูลจาก Google Sheet...','spin');
   var cb='cb_'+Date.now(),script=document.createElement('script');
   script.src=SCRIPT_URL+'?action=read&callback='+cb;
-  var t=setTimeout(function(){
-    setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง','err');
-    try{document.head.removeChild(script);delete window[cb];}catch(e){}
-  },15000);
+  var t=setTimeout(function(){setStatus('หมดเวลา — กด รีเฟรช อีกครั้ง','err');try{document.head.removeChild(script);delete window[cb];}catch(e){}},15000);
   window[cb]=function(res){
-    clearTimeout(t);
-    try{document.head.removeChild(script);}catch(e){}
-    delete window[cb];
+    clearTimeout(t);try{document.head.removeChild(script);}catch(e){}delete window[cb];
     if(res.status==='success'){
-      allData=res.data||[];
-      populateFilters();applyFilter();updateStats();
+      allData=res.data||[];populateFilters();applyFilter();updateStats();
       ['stats','toolbar','charts-section','table-section'].forEach(function(id){
-        var el=document.getElementById(id);
-        if(el)el.style.display=id==='stats'?'grid':id==='toolbar'?'flex':'block';
+        var el=document.getElementById(id);if(el)el.style.display=id==='stats'?'grid':id==='toolbar'?'flex':'block';
       });
       document.getElementById('pagination').style.display='flex';
-      setStatus('โหลดสำเร็จ — '+allData.length+' รายการ (อัปเดต: '+
-        new Date().toLocaleTimeString('th-TH')+')','ok');
-    }else{setStatus('เกิดข้อผิดพลาด','err');}
+      setStatus('โหลดสำเร็จ — '+allData.length+' รายการ (อัปเดต: '+new Date().toLocaleTimeString('th-TH')+')','ok');
+    } else setStatus('เกิดข้อผิดพลาด','err');
   };
-  script.onerror=function(){
-    clearTimeout(t);setStatus('เชื่อมต่อไม่ได้','err');
-    try{document.head.removeChild(script);delete window[cb];}catch(e){}
-  };
+  script.onerror=function(){clearTimeout(t);setStatus('เชื่อมต่อไม่ได้','err');try{document.head.removeChild(script);delete window[cb];}catch(e){}};
   document.head.appendChild(script);
 }
 
 function populateFilters(){
-  var subjects=[...new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean))]
-    .sort(function(a,b){return a.localeCompare(b,'th');});
-  document.getElementById('fil-subj').innerHTML=
-    '<option value="">กลุ่มสาระทั้งหมด</option>'+
-    subjects.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
+  var s=[...new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean))].sort(function(a,b){return a.localeCompare(b,'th');});
+  document.getElementById('fil-subj').innerHTML='<option value="">กลุ่มสาระทั้งหมด</option>'+s.map(function(x){return'<option value="'+x+'">'+x+'</option>';}).join('');
 }
 
 function applyFilter(){
   var q=(document.getElementById('search').value||'').toLowerCase();
   var sc=document.getElementById('fil-school').value;
-  var sj=document.getElementById('fil-subj').value;
+  var su=document.getElementById('fil-subj').value;
   var pl=document.getElementById('fil-plan').value;
   filtered=allData.filter(function(r){
-    var mQ=!q||Object.values(r).some(function(v){return String(v).toLowerCase().includes(q);});
-    var mC=!sc||r['โรงเรียน']===sc;
-    var mS=!sj||r['กลุ่มสาระการเรียนรู้']===sj;
-    var hL=!!(r['ลิ้งก์แผนการสอน']||'').trim();
-    var mP=!pl||(pl==='yes'?hL:!hL);
-    return mQ&&mC&&mS&&mP;
+    return(!q||Object.values(r).some(function(v){return String(v).toLowerCase().includes(q);}))&&
+      (!sc||r['โรงเรียน']===sc)&&(!su||r['กลุ่มสาระการเรียนรู้']===su)&&
+      (!pl||(pl==='yes'?!!(r['ลิ้งก์แผนการสอน']||'').trim():!(r['ลิ้งก์แผนการสอน']||'').trim()));
   });
   currentPage=1;renderTable();renderCharts();
-  var el=document.getElementById('filtered-count');
-  if(el)el.textContent=filtered.length+' รายการ';
+  var c=document.getElementById('filtered-count');if(c)c.textContent=filtered.length+' รายการ';
 }
 
 function updateStats(){
   document.getElementById('s-total').textContent=allData.length.toLocaleString();
   document.getElementById('s-schools').textContent=new Set(allData.map(function(r){return r['โรงเรียน'];}).filter(Boolean)).size;
   document.getElementById('s-subjects').textContent=new Set(allData.map(function(r){return r['กลุ่มสาระการเรียนรู้'];}).filter(Boolean)).size;
-  document.getElementById('s-uploaded').textContent=allData.filter(function(r){return !!(r['ลิ้งก์แผนการสอน']||'').trim();}).length;
+  document.getElementById('s-uploaded').textContent=allData.filter(function(r){return!!(r['ลิ้งก์แผนการสอน']||'').trim();}).length;
 }
 
-function count(data,key){
-  var map={};
-  data.forEach(function(r){var v=r[key]||'(ไม่ระบุ)';map[v]=(map[v]||0)+1;});
-  return Object.entries(map).map(function(e){return{label:e[0],value:e[1]};})
-    .sort(function(a,b){return b.value-a.value;});
+function cnt(data,key){
+  var m={};data.forEach(function(r){var v=r[key]||'(ไม่ระบุ)';m[v]=(m[v]||0)+1;});
+  return Object.entries(m).map(function(e){return{label:e[0],value:e[1]};}).sort(function(a,b){return b.value-a.value;});
 }
 
 function renderCharts(){
-  var ds=count(filtered,'กลุ่มสาระการเรียนรู้');
+  /* --- แผนภูมิกลุ่มสาระ (bar) --- */
+  var sd=cnt(filtered,'กลุ่มสาระการเรียนรู้');
   if(chartSubj)chartSubj.destroy();
-  chartSubj=new Chart(document.getElementById('chart-subj'),{
-    type:'bar',
-    data:{labels:ds.map(function(d){return d.label;}),datasets:[{
-      data:ds.map(function(d){return d.value;}),
-      backgroundColor:ds.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
-      borderColor:ds.map(function(_,i){return COLORS[i%COLORS.length];}),
+  chartSubj=new Chart(document.getElementById('chart-subj'),{type:'bar',
+    data:{labels:sd.map(function(d){return d.label;}),datasets:[{
+      data:sd.map(function(d){return d.value;}),
+      backgroundColor:sd.map(function(_,i){return COLORS[i%COLORS.length]+'bb';}),
+      borderColor:sd.map(function(_,i){return COLORS[i%COLORS.length];}),
       borderWidth:1.5,borderRadius:10,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:function(c){return ' '+c.raw+' คน ('+Math.round(c.raw/Math.max(filtered.length,1)*100)+'%)';}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน ('+Math.round(c.raw/(filtered.length||1)*100)+'%)';}}}},
       scales:{x:{grid:{display:false},ticks:{font:{family:'Sarabun',size:12}}},
-              y:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
-                 grid:{color:'rgba(0,0,0,.04)'},border:{display:false}}}}
-  });
+              y:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},grid:{color:'rgba(26,101,197,.07)'},border:{display:false}}}}});
 
-  var dr=count(filtered,'วิทยฐานะ');
+  /* --- แผนภูมิวิทยฐานะ (doughnut) --- */
+  var rd=cnt(filtered,'วิทยฐานะ');
   if(chartRank)chartRank.destroy();
-  chartRank=new Chart(document.getElementById('chart-rank'),{
-    type:'doughnut',
-    data:{labels:dr.map(function(d){return d.label;}),datasets:[{
-      data:dr.map(function(d){return d.value;}),
-      backgroundColor:dr.map(function(_,i){return COLORS[i%COLORS.length]+'dd';}),
-      borderColor:'#fff',borderWidth:3,hoverOffset:12}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',
-      plugins:{legend:{position:'bottom',labels:{font:{family:'Sarabun',size:12},
-        padding:14,boxWidth:12,usePointStyle:true}},
-        tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' คน';}}}}}
-  });
+  chartRank=new Chart(document.getElementById('chart-rank'),{type:'doughnut',
+    data:{labels:rd.map(function(d){return d.label;}),datasets:[{
+      data:rd.map(function(d){return d.value;}),
+      backgroundColor:rd.map(function(_,i){return COLORS[i%COLORS.length]+'cc';}),
+      borderColor:'#fff',borderWidth:3,hoverOffset:10}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{font:{family:'Sarabun',size:12},padding:14,boxWidth:12,usePointStyle:true}},
+               tooltip:{callbacks:{label:function(c){return' '+c.label+': '+c.raw+' คน';}}}}}});
 
-  var dsc=count(filtered,'โรงเรียน').slice(0,10);
+  /* --- Top 10 โรงเรียน (horizontal bar) --- */
+  var td=cnt(filtered,'โรงเรียน').slice(0,10);
   if(chartSchool)chartSchool.destroy();
-  chartSchool=new Chart(document.getElementById('chart-school'),{
-    type:'bar',
-    data:{labels:dsc.map(function(d){return d.label;}),datasets:[{
-      data:dsc.map(function(d){return d.value;}),
-      backgroundColor:'#06b6d4aa',borderColor:'#06b6d4',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},
+  chartSchool=new Chart(document.getElementById('chart-school'),{type:'bar',
+    data:{labels:td.map(function(d){return d.label;}),datasets:[{
+      data:td.map(function(d){return d.value;}),
+      backgroundColor:'#7bd6f9bb',borderColor:'#5aa8e8',borderWidth:1.5,borderRadius:8,borderSkipped:false}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+c.raw+' คน';}}}},
-      scales:{x:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},
-                 grid:{color:'rgba(0,0,0,.04)'},border:{display:false}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return' '+c.raw+' คน';}}}},
+      scales:{x:{beginAtZero:true,ticks:{precision:0,font:{family:'Sarabun'}},grid:{color:'rgba(26,101,197,.07)'},border:{display:false}},
               y:{grid:{display:false},ticks:{font:{family:'Sarabun',size:11},
-                callback:function(v){var l=dsc[v]?dsc[v].label:'';
-                  return l.length>14?l.substring(0,14)+'…':l;}}}}}
-  });
+                callback:function(v){var l=td[v]?td[v].label:'';return l.length>14?l.substring(0,14)+'…':l;}}}}}});
 }
 
 function renderTable(){
-  var start=(currentPage-1)*PAGE_SIZE;
-  var page=filtered.slice(start,start+PAGE_SIZE);
-  var total=Math.ceil(filtered.length/PAGE_SIZE);
+  var start=(currentPage-1)*PAGE_SIZE,page=filtered.slice(start,start+PAGE_SIZE),total=Math.ceil(filtered.length/PAGE_SIZE);
   if(!page.length){
-    document.getElementById('tbody').innerHTML=
-      '<tr><td colspan="7" class="empty"><span class="empty-icon">🔍</span>ไม่พบข้อมูลที่ตรงกับการค้นหา</td></tr>';
+    document.getElementById('tbody').innerHTML='<tr><td colspan="7" class="empty"><span class="empty-icon">🔍</span>ไม่พบข้อมูล</td></tr>';
     document.getElementById('page-info').textContent='';return;
   }
   document.getElementById('tbody').innerHTML=page.map(function(r,i){
-    var link=(r['ลิ้งก์แผนการสอน']||'').trim();
-    var planCell=link
-      ?'<a href="'+link+'" target="_blank" class="link-file">📄 เปิดไฟล์</a>'
-      :'<span class="badge b-pending">⏳ ยังไม่ส่ง</span>';
-    return'<tr>'+
-      '<td class="num">'+(start+i+1)+'</td>'+
+    var lk=(r['ลิ้งก์แผนการสอน']||'').trim();
+    var pc=lk?'<a href="'+lk+'" target="_blank" rel="noopener noreferrer" class="link-file" title="เปิดแท็บใหม่เพื่อดูแผนกิจกรรมการเรียนรู้">📄 ดูกิจกรรมการเรียนรู้ ↗</a>':'';
+    return'<tr><td class="num">'+(start+i+1)+'</td>'+
       '<td><span class="badge b-school">'+(r['โรงเรียน']||'—')+'</span></td>'+
-      '<td style="font-weight:500">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
+      '<td style="font-weight:600">'+(r['ชื่อ-นามสกุล']||'—')+'</td>'+
       '<td><span class="badge b-rank">'+(r['วิทยฐานะ']||'—')+'</span></td>'+
       '<td><span class="badge b-subj">'+(r['กลุ่มสาระการเรียนรู้']||'—')+'</span></td>'+
-      '<td>'+(r['ระดับชั้นที่สอน']||'—')+'</td>'+
-      '<td>'+planCell+'</td></tr>';
+      '<td>'+(r['ระดับชั้นที่สอน']||'—')+'</td><td>'+pc+'</td></tr>';
   }).join('');
   document.getElementById('page-info').textContent=
-    'หน้า '+currentPage+'/'+total+' · แสดง '+(start+1)+'–'+
-    Math.min(start+PAGE_SIZE,filtered.length)+' จาก '+filtered.length+' รายการ';
+    'หน้า '+currentPage+'/'+total+' · '+(start+1)+'–'+Math.min(start+PAGE_SIZE,filtered.length)+' จาก '+filtered.length+' รายการ';
   document.getElementById('btn-prev').disabled=currentPage<=1;
   document.getElementById('btn-next').disabled=currentPage>=total;
 }
 
 function changePage(dir){
   var total=Math.ceil(filtered.length/PAGE_SIZE);
-  currentPage=Math.max(1,Math.min(total,currentPage+dir));
-  renderTable();
+  currentPage=Math.max(1,Math.min(total,currentPage+dir));renderTable();
 }
 
 function exportCSV(){
-  var headers=['โรงเรียน','ชื่อ-นามสกุล','วิทยฐานะ','กลุ่มสาระการเรียนรู้','ระดับชั้นที่สอน','ลิ้งก์แผนการสอน'];
-  var rows=filtered.map(function(r){
-    return headers.map(function(h){return'"'+(r[h]||'').toString().replace(/"/g,'""')+'"';}).join(',');
-  });
+  var h=['โรงเรียน','ชื่อ-นามสกุล','วิทยฐานะ','กลุ่มสาระการเรียนรู้','ระดับชั้นที่สอน','ลิ้งก์แผนการสอน'];
+  var rows=filtered.map(function(r){return h.map(function(k){return'"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(',');});
   var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\uFEFF'+headers.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));
-  a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';
-  a.click();
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+h.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download='ครูPISA_'+new Date().toLocaleDateString('th-TH').replace(/\//g,'-')+'.csv';a.click();
 }
 
 var selectedFile=null;
@@ -765,11 +807,11 @@ function onDrop(e){e.preventDefault();document.getElementById('dz').classList.re
 function pickFile(f){
   if(!f)return;
   if(!/\.(pdf|doc|docx|ppt|pptx)$/i.test(f.name)){showAlert('ไฟล์ประเภทนี้ไม่รองรับ','err');return;}
-  if(f.size>20*1024*1024){showAlert('ไฟล์ใหญ่เกิน 20 MB','err');return;}
+  if(f.size>20*1024*1024){showAlert('ไฟล์เกิน 20 MB','err');return;}
   selectedFile=f;
-  var icons={pdf:'📕',doc:'📘',docx:'📘',ppt:'📙',pptx:'📙'};
+  var ic={pdf:'📕',doc:'📘',docx:'📘',ppt:'📙',pptx:'📙'};
   var ext=f.name.split('.').pop().toLowerCase();
-  document.getElementById('ficon').textContent=icons[ext]||'📄';
+  document.getElementById('ficon').textContent=ic[ext]||'📄';
   document.getElementById('fname').textContent=f.name;
   document.getElementById('fsize').textContent=(f.size/1024/1024).toFixed(2)+' MB';
   document.getElementById('finfo').classList.add('show');
@@ -778,57 +820,41 @@ function pickFile(f){
 function clearFile(){selectedFile=null;document.getElementById('fi').value='';document.getElementById('finfo').classList.remove('show');}
 
 function uploadFile(){
-  var school=document.getElementById('up-school').value.trim();
-  var name=document.getElementById('up-name').value.trim();
-  var subject=document.getElementById('up-subject').value.trim();
-  if(!school||!name||!subject||!selectedFile){showAlert('กรุณากรอกข้อมูลให้ครบทุกช่องและเลือกไฟล์','err');return;}
-  var btn=document.getElementById('ubtn');
-  btn.disabled=true;btn.textContent='⏳ กำลังอัปโหลด...';
+  var sc=document.getElementById('up-school').value.trim();
+  var nm=document.getElementById('up-name').value.trim();
+  var su=document.getElementById('up-subject').value.trim();
+  if(!sc||!nm||!su||!selectedFile){showAlert('กรุณากรอกข้อมูลให้ครบและเลือกไฟล์','err');return;}
+  var btn=document.getElementById('ubtn');btn.disabled=true;btn.textContent='⏳ กำลังอัปโหลด...';
   var pw=document.getElementById('pw'),pf=document.getElementById('pf'),pl=document.getElementById('pl');
-  pw.classList.add('show');
-  var prog=0,timer=setInterval(function(){
-    prog=Math.min(prog+Math.random()*10,85);pf.style.width=prog+'%';
-    pl.textContent='กำลังอัปโหลด... '+Math.round(prog)+'%';
-  },400);
+  pw.classList.add('show');var prog=0;
+  var timer=setInterval(function(){prog=Math.min(prog+Math.random()*10,85);pf.style.width=prog+'%';pl.textContent='กำลังอัปโหลด... '+Math.round(prog)+'%';},400);
   var reader=new FileReader();
   reader.onload=function(){
     var b64=reader.result.split(',')[1];
     fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({school:school,name:name,subject:subject,
-        fileData:b64,fileName:selectedFile.name,mimeType:selectedFile.type})})
+      body:JSON.stringify({school:sc,name:nm,subject:su,fileData:b64,fileName:selectedFile.name,mimeType:selectedFile.type})})
     .then(function(r){return r.json();})
-    .then(function(json){
-      clearInterval(timer);pf.style.width='100%';pl.textContent='อัปโหลดสำเร็จ! ✓';
-      if(json.status==='success'){
-        saveLinkToSheet(school,name,json.url);
-        showAlert('✅ อัปโหลดสำเร็จ!<br><a href="'+json.url+'" target="_blank">คลิกเปิดไฟล์ที่อัปโหลด →</a>','ok');
+    .then(function(j){
+      clearInterval(timer);pf.style.width='100%';pl.textContent='สำเร็จ! ✓';
+      if(j.status==='success'){
+        saveLinkToSheet(sc,nm,j.url);
+        showAlert('✅ อัปโหลดสำเร็จ!<br><a href="'+j.url+'" target="_blank">คลิกเปิดไฟล์ที่อัปโหลด →</a>','ok');
         clearFile();
-      }else{throw new Error(json.message||'server error');}
+      } else throw new Error(j.message||'error');
     })
-    .catch(function(err){
-      clearInterval(timer);pw.classList.remove('show');
-      showAlert('❌ อัปโหลดไม่สำเร็จ: '+err.message+'<br><small>กรุณาเปิดผ่าน GitHub Pages ไม่ใช่จาก file://</small>','err');
-    })
-    .finally(function(){
-      btn.disabled=false;btn.textContent='📤 อัปโหลดแผนการสอน';
-      setTimeout(function(){pw.classList.remove('show');},3000);
-    });
+    .catch(function(e){clearInterval(timer);pw.classList.remove('show');showAlert('❌ ไม่สำเร็จ: '+e.message,'err');})
+    .finally(function(){btn.disabled=false;btn.textContent='📤 อัปโหลดแผนการสอน';setTimeout(function(){pw.classList.remove('show');},3000);});
   };
   reader.readAsDataURL(selectedFile);
 }
 
-function saveLinkToSheet(school,name,url){
-  var cb='save_'+Date.now(),script=document.createElement('script');
-  script.src=SCRIPT_URL+'?action=savelink&callback='+cb+
-    '&school='+encodeURIComponent(school)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(url);
+function saveLinkToSheet(sc,nm,url){
+  var cb='sv_'+Date.now(),script=document.createElement('script');
+  script.src=SCRIPT_URL+'?action=savelink&callback='+cb+'&school='+encodeURIComponent(sc)+'&name='+encodeURIComponent(nm)+'&url='+encodeURIComponent(url);
   window[cb]=function(){delete window[cb];try{document.head.removeChild(script);}catch(e){}fetchData();};
   document.head.appendChild(script);
 }
-
-function showAlert(msg,type){
-  var el=document.getElementById('up-alert');
-  el.style.display='block';el.className='up-alert '+type;el.innerHTML=msg;
-}
+function showAlert(msg,type){var el=document.getElementById('up-alert');el.style.display='block';el.className='upload-alert '+type;el.innerHTML=msg;}
 
 fetchData();
 </script>
