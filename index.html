@@ -857,6 +857,16 @@ function setStatus(msg, state){
 /* =========================================================
    fetchData — JSONP
    ========================================================= */
+// ฟังก์ชันสร้าง badge กลุ่มสาระพร้อมสีตามวิชา
+function getSubjBadge(s){
+  s = s || '';
+  var cls = 'b-other';
+  if(s.indexOf('ภาษาไทย') !== -1)       cls = 'b-thai';
+  else if(s.indexOf('วิทยาศาสตร์') !== -1) cls = 'b-sci';
+  else if(s.indexOf('คณิต') !== -1)          cls = 'b-math';
+  return '<td><span class="badge ' + cls + '">' + (s || '&mdash;') + '</span></td>';
+}
+
 function fetchData(){
   setStatus('กำลังดึงข้อมูลจาก Google Sheet...', 'spin');
   var cb = 'cb_' + Date.now();
@@ -1035,7 +1045,7 @@ function renderTable(){
       '<td><span class="badge b-school">' + (r['\u0e42\u0e23\u0e07\u0e40\u0e23\u0e35\u0e22\u0e19']||'&mdash;') + '</span></td>' +
       '<td style="font-weight:600">' + (r['\u0e0a\u0e37\u0e48\u0e2d-\u0e19\u0e32\u0e21\u0e2a\u0e01\u0e38\u0e25']||'&mdash;') + '</td>' +
       '<td><span class="badge b-rank">' + (r['\u0e27\u0e34\u0e17\u0e22\u0e10\u0e32\u0e19\u0e30']||'&mdash;') + '</span></td>' +
-      '<td><span class="badge b-subj">' + (r['\u0e01\u0e25\u0e38\u0e48\u0e21\u0e2a\u0e32\u0e23\u0e30\u0e01\u0e32\u0e23\u0e40\u0e23\u0e35\u0e22\u0e19\u0e23\u0e39\u0e49']||'&mdash;') + '</span></td>' +
+      getSubjBadge(r['กลุ่มสาระการเรียนรู้']) +
       '<td>' + (r['\u0e23\u0e30\u0e14\u0e31\u0e1a\u0e0a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e2d\u0e19']||'&mdash;') + '</td>' +
       '<td>' + pc + '</td>' +
       '</tr>';
