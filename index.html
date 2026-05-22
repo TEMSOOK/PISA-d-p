@@ -745,6 +745,38 @@
           <option>คณิตศาสตร์</option>
         </select>
       </div>
+
+      <div class="form-group">
+        <label>วิทยฐานะ</label>
+        <select id="up-rank">
+          <option value="">— เลือกวิทยฐานะ —</option>
+          <option>ครูไม่มีวิทยฐานะ</option>
+          <option>ครูชำนาญการ</option>
+          <option>ครูชำนาญการพิเศษ</option>
+          <option>ครูเชี่ยวชาญ</option>
+          <option>ครูเชี่ยวชาญพิเศษ</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>ระดับชั้นที่สอน</label>
+        <select id="up-grade">
+          <option value="">— เลือกระดับชั้น —</option>
+          <option>ป.4</option>
+          <option>ป.5</option>
+          <option>ป.6</option>
+          <option>ป.4, ป.5</option>
+          <option>ป.4, ป.6</option>
+          <option>ป.5, ป.6</option>
+          <option>ป.4, ป.5, ป.6</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>เบอร์โทรศัพท์</label>
+        <input type="text" id="up-phone" placeholder="เช่น 081-234-5678"/>
+      </div>
+
       <hr class="divider"/>
       <div class="form-group">
         <label>🔗 ลิ้งก์แผนการจัดกิจกรรมการเรียนรู้ <span class="req">*</span></label>
@@ -1281,25 +1313,32 @@ function validateLink(){
 }
 
 function submitLink(){
-  var sc  = document.getElementById('up-school').value.trim();
-  var nm  = document.getElementById('up-name').value.trim();
-  var su  = document.getElementById('up-subject').value.trim();
-  var url = document.getElementById('up-link').value.trim();
+  var sc    = document.getElementById('up-school').value.trim();
+  var nm    = document.getElementById('up-name').value.trim();
+  var su    = document.getElementById('up-subject').value.trim();
+  var rank  = document.getElementById('up-rank').value.trim();
+  var grade = document.getElementById('up-grade').value.trim();
+  var phone = document.getElementById('up-phone').value.trim();
+  var url   = document.getElementById('up-link').value.trim();
   if(!sc || !nm || !su){ showAlert('\u0e01\u0e23\u0e38\u0e13\u0e32\u0e01\u0e23\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e43\u0e2b\u0e49\u0e04\u0e23\u0e1a\u0e17\u0e38\u0e01\u0e0a\u0e48\u0e2d\u0e07', 'err'); return; }
   if(!url || url.indexOf('http') !== 0){ showAlert('\u0e01\u0e23\u0e38\u0e13\u0e32\u0e27\u0e32\u0e07\u0e25\u0e34\u0e49\u0e07\u0e01\u0e4c\u0e17\u0e35\u0e48\u0e16\u0e39\u0e01\u0e15\u0e49\u0e2d\u0e07 (\u0e15\u0e49\u0e2d\u0e07\u0e02\u0e36\u0e49\u0e19\u0e15\u0e49\u0e19\u0e14\u0e49\u0e27\u0e22 http)', 'err'); return; }
   var btn = document.getElementById('ubtn');
   btn.disabled = true;
   btn.textContent = '\u0e01\u0e33\u0e25\u0e31\u0e07\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01...';
-  saveLinkToSheet(sc, nm, url);
+  saveLinkToSheet(sc, nm, su, rank, grade, phone, url);
 }
 
-function saveLinkToSheet(sc, nm, url){
+function saveLinkToSheet(sc, nm, su, rank, grade, phone, url){
   var cb = 'sv_' + Date.now();
   var script = document.createElement('script');
   script.src = SCRIPT_URL + '?action=savelink&_t=' + Date.now() + '&callback=' + cb +
-    '&school=' + encodeURIComponent(sc) +
-    '&name='   + encodeURIComponent(nm) +
-    '&url='    + encodeURIComponent(url);
+    '&school='   + encodeURIComponent(sc) +
+    '&name='     + encodeURIComponent(nm) +
+    '&subject='  + encodeURIComponent(su || '') +
+    '&rank='     + encodeURIComponent(rank || '') +
+    '&grade='    + encodeURIComponent(grade || '') +
+    '&phone='    + encodeURIComponent(phone || '') +
+    '&url='      + encodeURIComponent(url);
 
   var timer = setTimeout(function(){
     if(window[cb]){
